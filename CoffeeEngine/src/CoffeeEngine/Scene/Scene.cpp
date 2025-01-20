@@ -30,8 +30,6 @@
 #include <cereal/archives/json.hpp>
 #include <fstream>
 
-#include "CoffeeEngine/Audio/Audio.h"
-
 namespace Coffee {
 
     Scene::Scene() : m_Octree({glm::vec3(-50.0f), glm::vec3(50.0f)}, 10, 5)
@@ -262,8 +260,6 @@ namespace Coffee {
     void Scene::OnExitEditor()
     {
         ZoneScoped;
-
-        Audio::Shutdown();
     }
 
     void Scene::OnExitRuntime()
