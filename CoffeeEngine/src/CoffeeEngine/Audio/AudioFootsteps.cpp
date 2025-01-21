@@ -49,17 +49,13 @@ namespace Coffee {
         const char* newSurface;
 
         // Define grid-based positions for different surfaces
-        if (m_ListenerPosition.x >= 0.0f && m_ListenerPosition.x <= 50.0f &&
-            m_ListenerPosition.z >= 0.0f && m_ListenerPosition.z <= 50.0f) {
+        if (m_ListenerPosition.x > 0.0f && m_ListenerPosition.z > 0.0f ) {
             newSurface = "Water";
-        } else if (m_ListenerPosition.x > 50.0f && m_ListenerPosition.x <= 100.0f &&
-                   m_ListenerPosition.z >= 0.0f && m_ListenerPosition.z <= 50.0f) {
+        } else if (m_ListenerPosition.x > 0.0f && m_ListenerPosition.z < 0.0f) {
             newSurface = "Grass";
-        } else if (m_ListenerPosition.x >= 0.0f && m_ListenerPosition.x <= 50.0f &&
-                   m_ListenerPosition.z > 50.0f && m_ListenerPosition.z <= 100.0f) {
+        } else if (m_ListenerPosition.x < 0.0f && m_ListenerPosition.z > 0.0f) {
             newSurface = "Mud";
-        } else if (m_ListenerPosition.x > 50.0f && m_ListenerPosition.x <= 100.0f &&
-                   m_ListenerPosition.z > 50.0f && m_ListenerPosition.z <= 100.0f) {
+        } else if (m_ListenerPosition.x < 0.0f && m_ListenerPosition.z < 0.0f) {
             newSurface = "Boots";
         } else {
             newSurface = "Water";
