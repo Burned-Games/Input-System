@@ -47,6 +47,7 @@ namespace Coffee
         AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
 
         Play("Play_test_sound", gameObjectID);
+        Play("Play_BackgroundContainer", gameObjectID);
     }
 
     void Audio::Play(const char* eventName, AkGameObjectID gameObjectID)

@@ -1,6 +1,9 @@
 Event	ID	Name			Wwise Object Path	Notes
+	1474158143	Play_BackgroundContainer			\Default Work Unit\Play_BackgroundContainer	
 	3211564518	Play_test_sound			\Default Work Unit\Play_test_sound	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	760241267	test_sound	D:\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\B7\{B73DF230-C109-46B4-FAA4-AF2F8F78509B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\test_sound		322656
+	187034672	Combat-A-LowBrass_138bpm4-4_L8M-P0	C:\Users\sergi\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\52\{52E43852-FA8C-6DED-6AAB-CFCCC36A1807}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-A-LowBrass_138bpm4-4_L8M-P0		3339228
+	505350705	Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B	C:\Users\sergi\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\98\{9861D752-27B3-BA7D-A56D-E5B78B4CA7A2}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B		5843576
+	760241267	test_sound	C:\Users\sergi\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\B7\{B73DF230-C109-46B4-FAA4-AF2F8F78509B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\test_sound		322656
 

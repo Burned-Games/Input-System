@@ -10,11 +10,27 @@
     "Type": "User",
     "GUID": "{6088230F-1954-4D42-9B00-889897951AA0}",
     "Language": "SFX",
-    "Hash": "{EEF996DC-9C74-14CA-08DE-9C76D30F5503}",
+    "Hash": "{F14E3AD6-3BE4-7827-E6CB-3DE907AE0646}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\CoffeeEngine",
     "ShortName": "CoffeeEngine",
     "Path": "CoffeeEngine.bnk",
     "Media": [
+     {
+      "Id": "187034672",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Combat-A-LowBrass_138bpm4-4_L8M-P0.wav",
+      "CachePath": "52/{52E43852-FA8C-6DED-6AAB-CFCCC36A1807}.wem"
+     },
+     {
+      "Id": "505350705",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B.wav",
+      "CachePath": "98/{9861D752-27B3-BA7D-A56D-E5B78B4CA7A2}.wem"
+     },
      {
       "Id": "760241267",
       "Language": "SFX",
@@ -25,6 +41,21 @@
      }
     ],
     "Events": [
+     {
+      "Id": "1474158143",
+      "Name": "Play_BackgroundContainer",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_BackgroundContainer",
+      "GUID": "{A5674ED4-D568-42CC-9D09-49BC9EBD54DC}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "187034672"
+       },
+       {
+        "Id": "505350705"
+       }
+      ]
+     },
      {
       "Id": "3211564518",
       "Name": "Play_test_sound",
@@ -42,6 +73,6 @@
     ]
    }
   ],
-  "FileHash": "{0532EA6C-9DCF-206A-9043-27392A94F0F7}"
+  "FileHash": "{7809E5FC-384B-DFB3-4DC9-E4AE02363169}"
  }
 }

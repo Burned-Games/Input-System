@@ -14,6 +14,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Play_BackgroundContainer" ID="{A5674ED4-D568-42CC-9D09-49BC9EBD54DC}">
+					<ChildrenList>
+						<Action Name="" ID="{F6FA3AD2-8588-4568-9305-D05FBA2F5402}" ShortID="33036580">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="BackgroundContainer" ID="{764EF809-C7BB-415B-8C03-C39F619D104E}" WorkUnitID="{170B5407-85FF-4198-AA44-6B128A7ACD49}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
