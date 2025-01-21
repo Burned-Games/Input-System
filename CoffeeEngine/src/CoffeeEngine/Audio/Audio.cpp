@@ -54,6 +54,14 @@ namespace Coffee
         AK::SoundEngine::PostEvent(eventName, gameObjectID);
     }
 
+    void Audio::SetSwitch(const char* switchGroup, const char* switchState, AkGameObjectID gameObjectID) {
+        AK::SoundEngine::SetSwitch(switchGroup, switchState, gameObjectID);
+    }
+
+    void Audio::PostEvent(const char* eventName, AkGameObjectID gameObjectID) {
+        AK::SoundEngine::PostEvent(eventName, gameObjectID);
+    }
+
     void Audio::ProcessAudio()
     {
         AK::SoundEngine::RenderAudio();

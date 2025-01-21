@@ -54,6 +54,11 @@ namespace Coffee {
          */
         static void Play(const char* eventName, AkGameObjectID gameObjectID);
 
+        static void SetSwitch(const char* switchGroup, const char* switchState, AkGameObjectID gameObjectID);
+
+        static void PostEvent(const char* eventName, AkGameObjectID gameObjectID);
+
+
     private:
 
         /**

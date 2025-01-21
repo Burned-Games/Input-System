@@ -18,6 +18,7 @@
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include "entt/entity/snapshot.hpp"
+#include "CoffeeEngine/Audio/AudioFootsteps.h"
 
 #include <cstdint>
 #include <cstdlib>
@@ -108,6 +109,8 @@ namespace Coffee {
 
             m_Octree.Insert(objectContainer);
         }
+        AudioFootsteps::StartLoopingSound();
+
     }
 
     void Scene::OnUpdateEditor(EditorCamera& camera, float dt)
@@ -248,6 +251,7 @@ namespace Coffee {
 
             scriptComponent.script.OnUpdate();
         }
+        AudioFootsteps::Update();
 
         Renderer::EndScene();
     }
@@ -264,7 +268,7 @@ namespace Coffee {
 
     void Scene::OnExitRuntime()
     {
-
+        AudioFootsteps::StopLoopingSound();
     }
 
     Ref<Scene> Scene::Load(const std::filesystem::path& path)

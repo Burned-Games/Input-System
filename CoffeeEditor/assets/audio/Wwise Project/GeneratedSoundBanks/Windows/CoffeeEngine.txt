@@ -1,6 +1,21 @@
 Event	ID	Name			Wwise Object Path	Notes
+	1894362767	Foot_Player			\Default Work Unit\Foot_Player	
+	2955210170	Foot_Player_Stop			\Default Work Unit\Foot_Player_Stop	
 	3211564518	Play_test_sound			\Default Work Unit\Play_test_sound	
 
+Switch Group	ID	Name			Wwise Object Path	Notes
+	63790334	SurfaceType			\Default Work Unit\SurfaceType	
+
+Switch	ID	Name	Switch Group			Notes
+	712897245	Mud	SurfaceType			
+	2305815328	Boots	SurfaceType			
+	2654748154	Water	SurfaceType			
+	4248645337	Grass	SurfaceType			
+
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	760241267	test_sound	D:\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\B7\{B73DF230-C109-46B4-FAA4-AF2F8F78509B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\test_sound		322656
+	30293186	bootsWalk	C:\Users\CaseChips\CLionProjects\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\9B\{9B867C87-2C8F-D144-6D7F-276B85B62C2A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\bootsWalk		688224
+	189916745	grassWalk	C:\Users\CaseChips\CLionProjects\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\45\{452802A4-B931-8BD0-FADC-C00B700BA28A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\grassWalk		1532000
+	357433118	mudWalk	C:\Users\CaseChips\CLionProjects\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\4F\{4F1A1627-4078-FA5F-3A06-0F7EB26954D0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\mudWalk		2007136
+	627137966	SplashingFootsteps	C:\Users\CaseChips\CLionProjects\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\5F\{5FEBDF98-17B2-EF24-6F85-601DFE67D2DA}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Footsteps\SplashingFootsteps		1285728
+	760241267	test_sound	C:\Users\CaseChips\CLionProjects\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\B7\{B73DF230-C109-46B4-FAA4-AF2F8F78509B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\test_sound		322656
 

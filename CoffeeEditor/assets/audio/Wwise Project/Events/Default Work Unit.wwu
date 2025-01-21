@@ -14,12 +14,26 @@
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_SplashingFootsteps" ID="{114BA198-9386-402D-AC02-3E8ED0436D2D}">
+				<Event Name="Foot_Player" ID="{BCF9233E-3CEA-439B-8521-9C87E48EAC46}">
 					<ChildrenList>
-						<Action Name="" ID="{33243A5D-6203-4D1E-8659-F3CCE0DBC708}" ShortID="945712280">
+						<Action Name="" ID="{506EF8B8-51AD-4841-8FA6-3A085C5E885A}" ShortID="458532999">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="SplashingFootsteps" ID="{D13B8A71-A624-4F40-AAAF-C505EC74C7C6}" WorkUnitID="{ED91A1CE-E97E-4C12-9675-FF2AA2750BAD}"/>
+									<ObjectRef Name="Footsteps" ID="{228F4794-B691-4B9B-AE70-2E83652802C7}" WorkUnitID="{ED91A1CE-E97E-4C12-9675-FF2AA2750BAD}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Foot_Player_Stop" ID="{3E7A3FA4-9555-4F84-95F0-70FFAA4DFB58}">
+					<ChildrenList>
+						<Action Name="" ID="{D4CAD0D8-4CA9-4886-8BB1-DFF37F6DDFAE}" ShortID="790528592">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Footsteps" ID="{228F4794-B691-4B9B-AE70-2E83652802C7}" WorkUnitID="{ED91A1CE-E97E-4C12-9675-FF2AA2750BAD}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
