@@ -2,6 +2,15 @@ Event	ID	Name			Wwise Object Path	Notes
 	1474158143	Play_BackgroundContainer			\Default Work Unit\Play_BackgroundContainer	
 	3211564518	Play_test_sound			\Default Work Unit\Play_test_sound	
 
+Audio Bus	ID	Name			Wwise Object Path	Notes
+	3803692087	Master Audio Bus			\Default Work Unit\Master Audio Bus	
+
+Auxiliary Bus	ID	Name			Wwise Object Path	Notes
+	4091100022	MediumRoomVerb			\Default Work Unit\Master Audio Bus\MediumRoomVerb	
+
+Effect plug-ins	ID	Name	Type				Notes
+	1990128658	Room_Medium	Wwise RoomVerb			
+
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
 	187034672	Combat-A-LowBrass_138bpm4-4_L8M-P0	C:\Users\paubl\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\52\{52E43852-FA8C-6DED-6AAB-CFCCC36A1807}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-A-LowBrass_138bpm4-4_L8M-P0		3339228
 	505350705	Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B	C:\Users\paubl\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\98\{9861D752-27B3-BA7D-A56D-E5B78B4CA7A2}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B		5843576
