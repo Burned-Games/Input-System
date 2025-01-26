@@ -1,13 +1,13 @@
 #include "CoffeeEngine/Core/Application.h"
-#include "CoffeeEngine/Audio/Audio.h"
 
 #include "CoffeeEngine/Core/Layer.h"
 #include "CoffeeEngine/Core/Stopwatch.h"
 #include "CoffeeEngine/Events/KeyEvent.h"
 #include "CoffeeEngine/Renderer/Renderer.h"
+#include "CoffeeEngine/Audio/Audio.h"
 
-#include <SDL3/SDL.h>
 #include <SDL3/SDL_timer.h>
+#include <SDL3/SDL.h>
 #include <tracy/Tracy.hpp>
 
 namespace Coffee

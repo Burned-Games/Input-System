@@ -21,7 +21,7 @@ Auxiliary Bus	ID	Name			Wwise Object Path	Notes
 	4091100022	MediumRoomVerb			\Default Work Unit\Master Audio Bus\MediumRoomVerb	
 
 Effect plug-ins	ID	Name	Type				Notes
-	1990128658	Room_Medium	Wwise RoomVerb			
+	379279518	RoomVerb (Custom)	Wwise RoomVerb			
 
 Audio Devices	ID	Name	Type				Notes
 	2317455096	No_Output	No Output			

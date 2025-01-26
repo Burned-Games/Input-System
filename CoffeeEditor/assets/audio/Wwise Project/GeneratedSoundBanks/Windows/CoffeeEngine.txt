@@ -9,10 +9,10 @@ Auxiliary Bus	ID	Name			Wwise Object Path	Notes
 	4091100022	MediumRoomVerb			\Default Work Unit\Master Audio Bus\MediumRoomVerb	
 
 Effect plug-ins	ID	Name	Type				Notes
-	1990128658	Room_Medium	Wwise RoomVerb			
+	379279518	RoomVerb (Custom)	Wwise RoomVerb			
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	187034672	Combat-A-LowBrass_138bpm4-4_L8M-P0	C:\Users\paubl\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\52\{52E43852-FA8C-6DED-6AAB-CFCCC36A1807}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-A-LowBrass_138bpm4-4_L8M-P0		3339228
-	505350705	Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B	C:\Users\paubl\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\98\{9861D752-27B3-BA7D-A56D-E5B78B4CA7A2}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B		5843576
-	760241267	test_sound	C:\Users\paubl\Documents\GitHub\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\B7\{B73DF230-C109-46B4-FAA4-AF2F8F78509B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\test_sound		322656
+	187034672	Combat-A-LowBrass_138bpm4-4_L8M-P0	C:\Users\guill\OneDrive\Documentos\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\52\{52E43852-FA8C-6DED-6AAB-CFCCC36A1807}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-A-LowBrass_138bpm4-4_L8M-P0		3339228
+	505350705	Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B	C:\Users\guill\OneDrive\Documentos\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\98\{9861D752-27B3-BA7D-A56D-E5B78B4CA7A2}.wem		\Interactive Music Hierarchy\Music\BackgroundContainer\Background\Combat-Bridge-Gtr2_138bpm4-4_L17M-P1B		5843576
+	760241267	test_sound	C:\Users\guill\OneDrive\Documentos\Coffee-Engine-Audio\CoffeeEditor\assets\audio\Wwise Project\.cache\5D\{5DBA4F23-0EC7-B576-EE1E-81693A3E5BC2}.wem		\Actor-Mixer Hierarchy\Default Work Unit\test_sound		322656
 

@@ -10,17 +10,17 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{AFA112A3-65E6-45F1-EEA8-8A5E77ECB01D}",
+    "Hash": "{EE6C8DC9-90DE-4B07-2239-05C5D010C453}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
     "Plugins": {
-     "ShareSets": [
+     "Custom": [
       {
-       "Id": "1990128658",
-       "Name": "Room_Medium",
-       "ObjectPath": "\\Effects\\Factory Effects\\RoomVerb\\Rooms\\Room_Medium",
-       "GUID": "{F5C06EC1-E4A4-4332-A7D3-A89E2986B74F}",
+       "Id": "379279518",
+       "Name": "RoomVerb (Custom)",
+       "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb\\[Effect Slot [0]: (RoomVerb)]\\RoomVerb (Custom)",
+       "GUID": "{FE279C33-8342-4CC9-8C86-6D39FFA7D912}",
        "LibName": "Wwise RoomVerb",
        "LibId": "7733251"
       }
@@ -59,9 +59,9 @@
       "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb",
       "GUID": "{97E62932-E838-4A2C-9E32-0EEEAEE1356A}",
       "PluginRefs": {
-       "ShareSets": [
+       "Custom": [
         {
-         "Id": "1990128658"
+         "Id": "379279518"
         }
        ]
       }
@@ -546,6 +546,6 @@
     ]
    }
   ],
-  "FileHash": "{122E2970-9DB6-BEC4-B4EB-CF762FE366AA}"
+  "FileHash": "{2F241426-E7F4-5201-64D1-FF292619BC7F}"
  }
 }

@@ -74,8 +74,12 @@ namespace Coffee
 
     void ReverbSystem::SetObjectInReverbZone(AkGameObjectID objectID, bool isInZone)
     {
-        float level = isInZone ? REVERB_LEVEL_ENABLED : REVERB_LEVEL_DISABLED;
-        AK::SoundEngine::SetGameObjectOutputBusVolume(objectID, m_mediumRoomBusID, level);
+        AkAuxSendValue auxSend;
+        auxSend.listenerID = AK_INVALID_GAME_OBJECT;
+        auxSend.auxBusID = m_mediumRoomBusID;
+        auxSend.fControlValue = isInZone ? REVERB_LEVEL_ENABLED : REVERB_LEVEL_DISABLED;
+
+        AK::SoundEngine::SetGameObjectAuxSendValues(objectID, &auxSend, 1);
     }
 
     void ReverbSystem::RegisterObject(AkGameObjectID objectID, const AkVector& position)

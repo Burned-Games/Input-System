@@ -4,6 +4,18 @@
 		<WorkUnit Name="Default Work Unit" ID="{23999393-1AC3-4B7F-B2F4-C899E2D89A5C}" PersistMode="Standalone">
 			<ChildrenList>
 				<Bus Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}">
+					<PropertyList>
+						<Property Name="BusVolume" Type="Real64">
+							<ValueList>
+								<Value>3</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>5</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
 							<ObjectRef Name="System" ID="{BCFE5E1F-9A89-4D30-A65B-33DDF556A7C3}" WorkUnitID="{0D657B52-6AC5-4DBF-8847-7699587BF7C1}"/>
@@ -11,14 +23,34 @@
 					</ReferenceList>
 					<ChildrenList>
 						<AuxBus Name="MediumRoomVerb" ID="{97E62932-E838-4A2C-9E32-0EEEAEE1356A}">
+							<PropertyList>
+								<Property Name="BusVolume" Type="Real64">
+									<ValueList>
+										<Value>10</Value>
+									</ValueList>
+								</Property>
+								<Property Name="GameAuxSendVolume" Type="Real64">
+									<ValueList>
+										<Value>10</Value>
+									</ValueList>
+								</Property>
+								<Property Name="OutputBusVolume" Type="Real64">
+									<ValueList>
+										<Value>10</Value>
+									</ValueList>
+								</Property>
+								<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+							</PropertyList>
 							<ObjectLists>
 								<ObjectList Name="Effects">
 									<Reference>
 										<Local>
-											<EffectSlot Name="" ID="{DB8FFFA0-4DCB-4E6E-9228-02C8B98FB315}" ShortID="789491944">
+											<EffectSlot Name="" ID="{AD7C14DA-B59A-448F-AB07-3F1140EE9A62}" ShortID="872705006">
 												<ReferenceList>
-													<Reference Name="Effect" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
-														<ObjectRef Name="Room_Medium" ID="{F5C06EC1-E4A4-4332-A7D3-A89E2986B74F}" WorkUnitID="{E8613F7D-BAD3-45CD-A3ED-505576F31277}"/>
+													<Reference Name="Effect">
+														<Custom>
+															<Effect Name="RoomVerb (Custom)" ID="{FE279C33-8342-4CC9-8C86-6D39FFA7D912}" ShortID="379279518" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3"/>
+														</Custom>
 													</Reference>
 												</ReferenceList>
 											</EffectSlot>

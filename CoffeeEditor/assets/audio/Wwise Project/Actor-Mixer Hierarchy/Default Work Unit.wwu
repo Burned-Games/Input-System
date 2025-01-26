@@ -4,12 +4,20 @@
 		<WorkUnit Name="Default Work Unit" ID="{ED91A1CE-E97E-4C12-9675-FF2AA2750BAD}" PersistMode="Standalone">
 			<ChildrenList>
 				<Sound Name="test_sound" ID="{D5FE137C-4705-41F3-808A-C0CFDBB3F018}" ShortID="1053671974">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{D9F0B507-EF28-4671-815C-157321DEF82C}"/>
 						</Reference>
 						<Reference Name="OutputBus">
 							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{23999393-1AC3-4B7F-B2F4-C899E2D89A5C}"/>
+						</Reference>
+						<Reference Name="UserAuxSend0">
+							<ObjectRef Name="MediumRoomVerb" ID="{97E62932-E838-4A2C-9E32-0EEEAEE1356A}" WorkUnitID="{23999393-1AC3-4B7F-B2F4-C899E2D89A5C}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>

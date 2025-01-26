@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{6088230F-1954-4D42-9B00-889897951AA0}",
     "Language": "SFX",
-    "Hash": "{4A743400-7E19-E551-41A3-99B35CBF26E9}",
+    "Hash": "{905576C2-1785-94CD-A46F-8A80C88B7B27}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\CoffeeEngine",
     "ShortName": "CoffeeEngine",
     "Path": "CoffeeEngine.bnk",
@@ -37,16 +37,16 @@
       "Streaming": "false",
       "Location": "Memory",
       "ShortName": "test_sound.wav",
-      "CachePath": "B7/{B73DF230-C109-46B4-FAA4-AF2F8F78509B}.wem"
+      "CachePath": "5D/{5DBA4F23-0EC7-B576-EE1E-81693A3E5BC2}.wem"
      }
     ],
     "Plugins": {
-     "ShareSets": [
+     "Custom": [
       {
-       "Id": "1990128658",
-       "Name": "Room_Medium",
-       "ObjectPath": "\\Effects\\Factory Effects\\RoomVerb\\Rooms\\Room_Medium",
-       "GUID": "{F5C06EC1-E4A4-4332-A7D3-A89E2986B74F}",
+       "Id": "379279518",
+       "Name": "RoomVerb (Custom)",
+       "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb\\[Effect Slot [0]: (RoomVerb)]\\RoomVerb (Custom)",
+       "GUID": "{FE279C33-8342-4CC9-8C86-6D39FFA7D912}",
        "LibName": "Wwise RoomVerb",
        "LibId": "7733251"
       }
@@ -72,13 +72,19 @@
       "Id": "3211564518",
       "Name": "Play_test_sound",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_test_sound",
-      "GUID": "{8FFE06AF-FCEB-457A-ABC6-265509D09B4D}",
-      "DurationType": "OneShot",
-      "DurationMin": "1.8285714",
-      "DurationMax": "1.8285714",
+      "GUID": "{114C7D3B-95A8-449B-AA32-9B2CC8E24580}",
+      "DurationType": "Infinite",
       "MediaRefs": [
        {
         "Id": "760241267"
+       }
+      ],
+      "AuxBusRefs": [
+       {
+        "Id": "4091100022",
+        "Name": "MediumRoomVerb",
+        "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb",
+        "GUID": "{97E62932-E838-4A2C-9E32-0EEEAEE1356A}"
        }
       ]
      }
@@ -98,9 +104,9 @@
       "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb",
       "GUID": "{97E62932-E838-4A2C-9E32-0EEEAEE1356A}",
       "PluginRefs": {
-       "ShareSets": [
+       "Custom": [
         {
-         "Id": "1990128658"
+         "Id": "379279518"
         }
        ]
       }
@@ -108,6 +114,6 @@
     ]
    }
   ],
-  "FileHash": "{82E24423-7EC1-9068-BA1E-52D2E914463F}"
+  "FileHash": "{FCDB5C30-710A-EB82-705F-83205AB07C7B}"
  }
 }
