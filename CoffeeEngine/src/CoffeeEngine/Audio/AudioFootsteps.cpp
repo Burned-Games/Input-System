@@ -39,9 +39,9 @@ namespace Coffee {
     }
     void AudioFootsteps::HandleInput() {
         // Update position based on key presses
-        if (AudioFootsteps::IsKeyPressed(10)) m_ListenerPosition.z += 1.0f; // Forward
-        if (AudioFootsteps::IsKeyPressed(11)) m_ListenerPosition.z -= 1.0f; // Backward
-        if (AudioFootsteps::IsKeyPressed(13)) m_ListenerPosition.x -= 1.0f; // Left
+        if (AudioFootsteps::IsKeyPressed(24)) m_ListenerPosition.z += 1.0f; // Forward
+        if (AudioFootsteps::IsKeyPressed(13)) m_ListenerPosition.z -= 1.0f; // Backward
+        if (AudioFootsteps::IsKeyPressed(11)) m_ListenerPosition.x -= 1.0f; // Left
         if (AudioFootsteps::IsKeyPressed(14)) m_ListenerPosition.x += 1.0f; // Right
     }
 
