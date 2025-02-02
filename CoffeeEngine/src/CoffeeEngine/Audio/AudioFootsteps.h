@@ -1,9 +1,4 @@
-//
-// Created by CaseChips on 21/01/2025.
-//
-
-#ifndef AUDIOFOOTSTEPS_H
-#define AUDIOFOOTSTEPS_H
+#pragma once
 
 #include "Audio.h"  // Wwise audio functions
 #include <glm/glm.hpp> // For position handling
@@ -57,6 +52,3 @@ namespace Coffee {
     };
 
 }
-
-#endif // AUDIOFOOTSTEPS_H
-

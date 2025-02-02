@@ -74,15 +74,15 @@ namespace Coffee {
 
     void AudioFootsteps::StartLoopingSound() {
         if (!m_IsPlaying) {
-            AK::SoundEngine::SetSwitch("SurfaceType", m_CurrentSurface, m_ListenerID);
-            AK::SoundEngine::PostEvent("Foot_Player", m_ListenerID);
+            Audio::SetSwitch("SurfaceType", m_CurrentSurface, m_ListenerID);
+            Audio::PlayEvent("Foot_Player", m_ListenerID);
             m_IsPlaying = true;
         }
     }
 
     void AudioFootsteps::StopLoopingSound() {
         if (m_IsPlaying) {
-            AK::SoundEngine::PostEvent("Foot_Player_Stop", m_ListenerID);
+            Audio::PlayEvent("Foot_Player_Stop", m_ListenerID);
             m_IsPlaying = false;
         }
     }
