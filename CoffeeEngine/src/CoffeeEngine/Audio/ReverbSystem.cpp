@@ -3,6 +3,8 @@
 #include <AK/SoundEngine/Common/AkSoundEngine.h>
 #include <unordered_map>
 
+#include <AK/Plugin/AkRoomVerbFXFactory.h>
+
 namespace Coffee
 {
     AkGameObjectID m_nextZoneID= 1000;
