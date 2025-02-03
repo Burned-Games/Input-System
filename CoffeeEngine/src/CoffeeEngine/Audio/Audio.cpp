@@ -61,6 +61,7 @@ namespace Coffee
 
     void Audio::ProcessAudio()
     {
+        ReverbSystem::Update();
         AK::SoundEngine::RenderAudio();
     }
 
