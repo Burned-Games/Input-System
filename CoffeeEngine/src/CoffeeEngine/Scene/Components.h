@@ -25,6 +25,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
+#include "CoffeeEngine/Audio/Audio.h"
 
 namespace Coffee {
     /**
@@ -283,6 +284,16 @@ namespace Coffee {
         {
             archive(cereal::make_nvp("Color", Color), cereal::make_nvp("Direction", Direction), cereal::make_nvp("Position", Position), cereal::make_nvp("Range", Range), cereal::make_nvp("Attenuation", Attenuation), cereal::make_nvp("Intensity", Intensity), cereal::make_nvp("Angle", Angle), cereal::make_nvp("Type", type));
         }
+    };
+
+    struct AudioSourceComponent
+    {
+        AudioSourceComponent() = default;
+
+        AkGameObjectID gameObjectID;
+        Audio::AudioBank* audioBank;
+        std::string audioBankName;
+        std::string eventName;
     };
 }
 
