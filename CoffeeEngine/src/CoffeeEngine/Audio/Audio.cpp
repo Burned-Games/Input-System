@@ -1,5 +1,7 @@
 #include "Audio.h"
 
+#include "ReverbSystem.h"
+
 #include <cassert>
 
 namespace Coffee
@@ -54,12 +56,17 @@ namespace Coffee
 
         // Set the listener
         AkGameObjectID listenerID = 200;
+        RegisterGameObject(100);
+        ReverbSystem::Initialize();
+
         RegisterGameObject(listenerID);
+
         AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
+        ReverbSystem::Update();
+
+        PlayEvent("Play_test_sound", 100);
 
         SetListenerPosition(listenerPos, forward, up);
-
-        //Play("Play_BackgroundContainer", gameObjectID);
 
         AkGameObjectID leftSoundObject = 300;
         AkGameObjectID rightSoundObject = 301;
@@ -124,6 +131,8 @@ namespace Coffee
 
     void Audio::ProcessAudio()
     {
+        ReverbSystem::Update();
+      
         static float elapsedTime = 0.0f;
         elapsedTime += 0.001f;
 

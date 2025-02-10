@@ -1,4 +1,5 @@
 #include "CoffeeEngine/Core/Application.h"
+
 #include "CoffeeEngine/Core/Layer.h"
 #include "CoffeeEngine/Core/Stopwatch.h"
 #include "CoffeeEngine/Events/KeyEvent.h"
@@ -27,6 +28,7 @@ namespace Coffee
         Renderer::Init();
         Audio::Init();
         AudioFootsteps::Initialize();
+
 
         m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
