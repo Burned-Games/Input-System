@@ -294,6 +294,8 @@ namespace Coffee {
         Audio::AudioBank* audioBank;
         std::string audioBankName;
         std::string eventName;
+        float volume = 1.f;
+        bool mute = false;
     };
 }
 
