@@ -10,21 +10,11 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{EE6C8DC9-90DE-4B07-2239-05C5D010C453}",
+    "Hash": "{8C195DD4-BF5A-F41F-4C7F-E8556E5612B3}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
     "Plugins": {
-     "Custom": [
-      {
-       "Id": "379279518",
-       "Name": "RoomVerb (Custom)",
-       "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb\\[Effect Slot [0]: (RoomVerb)]\\RoomVerb (Custom)",
-       "GUID": "{FE279C33-8342-4CC9-8C86-6D39FFA7D912}",
-       "LibName": "Wwise RoomVerb",
-       "LibId": "7733251"
-      }
-     ],
      "AudioDevices": [
       {
        "Id": "2317455096",
@@ -52,19 +42,38 @@
       "GUID": "{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}"
      }
     ],
-    "AuxBusses": [
+    "SwitchGroups": [
      {
-      "Id": "4091100022",
-      "Name": "MediumRoomVerb",
-      "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\MediumRoomVerb",
-      "GUID": "{97E62932-E838-4A2C-9E32-0EEEAEE1356A}",
-      "PluginRefs": {
-       "Custom": [
-        {
-         "Id": "379279518"
-        }
-       ]
-      }
+      "Id": "63790334",
+      "Name": "SurfaceType",
+      "ObjectPath": "\\Switches\\Default Work Unit\\SurfaceType",
+      "GUID": "{8B0AA71D-BE8B-4FD1-8F22-68612AF27D8A}",
+      "Switches": [
+       {
+        "Id": "712897245",
+        "Name": "Mud",
+        "ObjectPath": "\\Switches\\Default Work Unit\\SurfaceType\\Mud",
+        "GUID": "{DD1AC388-9BAD-49AD-B5FB-15689C494EAD}"
+       },
+       {
+        "Id": "2305815328",
+        "Name": "Boots",
+        "ObjectPath": "\\Switches\\Default Work Unit\\SurfaceType\\Boots",
+        "GUID": "{335B17FA-C4C9-4875-95BD-E7DC383BC106}"
+       },
+       {
+        "Id": "2654748154",
+        "Name": "Water",
+        "ObjectPath": "\\Switches\\Default Work Unit\\SurfaceType\\Water",
+        "GUID": "{25606F1E-2C56-46CA-BE66-324B37861B88}"
+       },
+       {
+        "Id": "4248645337",
+        "Name": "Grass",
+        "ObjectPath": "\\Switches\\Default Work Unit\\SurfaceType\\Grass",
+        "GUID": "{935442A5-5108-4223-B0CC-1B07630CC93A}"
+       }
+      ]
      }
     ],
     "AcousticTextures": [
@@ -546,6 +555,6 @@
     ]
    }
   ],
-  "FileHash": "{2F241426-E7F4-5201-64D1-FF292619BC7F}"
+  "FileHash": "{110B8F04-C005-CC19-F95B-E6A39C53FCA3}"
  }
 }

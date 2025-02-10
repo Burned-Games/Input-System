@@ -6,13 +6,15 @@
 				<SoundcasterSession Name="Session" ID="{126447C7-2E63-4603-B887-22AE3954E6B0}">
 					<ModuleList>
 						<Module>
-							<ObjectRef Name="test_sound" ID="{D5FE137C-4705-41F3-808A-C0CFDBB3F018}" WorkUnitID="{ED91A1CE-E97E-4C12-9675-FF2AA2750BAD}"/>
-							<Position X="0" Y="0"/>
+							<ObjectRef Name="Play_BackgroundContainer" ID="{A5674ED4-D568-42CC-9D09-49BC9EBD54DC}" WorkUnitID="{975F2CA9-DA6F-46E5-8F4E-1960033B6F2F}"/>
+							<Position X="1" Y="0"/>
 						</Module>
 					</ModuleList>
 					<RTPCValueList ShowAll="true"/>
 					<CurrentStateList ShowAll="true"/>
-					<CurrentSwitchList ShowAll="true"/>
+					<CurrentSwitchList ShowAll="true">
+						<CurrentSwitchRef Name="Boots" ID="{335B17FA-C4C9-4875-95BD-E7DC383BC106}"/>
+					</CurrentSwitchList>
 				</SoundcasterSession>
 			</ChildrenList>
 		</WorkUnit>
