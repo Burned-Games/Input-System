@@ -56,7 +56,7 @@ namespace Coffee
 
         // Set the listener
         AkGameObjectID listenerID = 200;
-
+        RegisterGameObject(100);
         ReverbSystem::Initialize();
 
         RegisterGameObject(listenerID);
@@ -64,7 +64,7 @@ namespace Coffee
         AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
         ReverbSystem::Update();
 
-        Play("Play_test_sound", gameObjectID);
+        PlayEvent("Play_test_sound", 100);
 
         SetListenerPosition(listenerPos, forward, up);
 
