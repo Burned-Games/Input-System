@@ -569,7 +569,7 @@ namespace Coffee {
             {
                 if (!Audio::audioBanks.empty() && ImGui::BeginCombo("Audio Bank", audioSourceComponent.audioBankName.c_str()))
                 {
-                    for (auto* bank : Audio::audioBanks)
+                    for (auto& bank : Audio::audioBanks)
                     {
                         const bool isSelected = (audioSourceComponent.audioBankName == bank->name);
 
@@ -601,6 +601,7 @@ namespace Coffee {
                         if (ImGui::Selectable(event.c_str()))
                         {
                             audioSourceComponent.eventName = event;
+                            Audio::PlayEvent(audioSourceComponent.eventName.c_str(), audioSourceComponent.gameObjectID);
                         }
 
                         if (isSelected)
