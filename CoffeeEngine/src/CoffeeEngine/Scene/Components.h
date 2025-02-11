@@ -300,6 +300,16 @@ namespace Coffee {
         float volume = 1.f;
         bool mute = false;
     };
+
+    struct AudioListenerComponent
+    {
+        AudioListenerComponent()
+        {
+            Audio::RegisterAudioListenerComponent(*this);
+        }
+
+        AkGameObjectID gameObjectID;
+    };
 }
 
 /** @} */
