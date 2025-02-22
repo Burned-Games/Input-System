@@ -125,7 +125,7 @@ namespace Coffee {
 
     bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event)
     {
-        if (event.GetMouseButton() == Mouse::BUTTON_LEFT)
+        if (event.GetMouseButton() == Mouse::ButtonLeft)
         {
             if (m_ViewportHovered && !ImGuizmo::IsOver() && !ImGuizmo::IsUsing())
             {
@@ -718,6 +718,9 @@ namespace Coffee {
 
     void EditorLayer::NewScene()
     {
+        AudioZone::RemoveAllReverbZones();
+        Audio::UnregisterAllGameObjects();
+
         m_EditorScene = CreateRef<Scene>();
         m_ActiveScene = m_EditorScene;
         m_ActiveScene->OnInitEditor();

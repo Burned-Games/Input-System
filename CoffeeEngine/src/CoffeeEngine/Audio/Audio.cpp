@@ -1,8 +1,10 @@
 #include "Audio.h"
 
-#include "ReverbSystem.h"
+#include "CoffeeEngine/Scene/Components.h"
 
 #include <cassert>
+#include <fstream>
+#include <sstream>
 
 namespace Coffee
 {
@@ -10,20 +12,9 @@ namespace Coffee
     // Global pointer for the low-level IO
     CAkFilePackageLowLevelIODeferred* g_lowLevelIO = nullptr;
 
-    glm::vec3 frontSoundObjectPos(0.0f, 0.0f, 100.0f);
-    glm::vec3 backSoundObjectPos(0.0f, 0.0f, -100.0f);
-
-    float frontSpeed = 50.0f;
-    float backSpeed = 50.0f;
-    bool frontMovingRight = true;
-    bool backMovingUp = true;
-
-    glm::vec3 listenerPos(0.0f, 0.0f, 0.0f);
-    glm::vec3 forward(0.0f, 0.0f, 1.0f);
-    glm::vec3 up(0.0f, 1.0f, 0.0f);
-
-    float listenerSpeed = 50.0f;
-    bool listenerMovingForward = true;
+    std::vector<Ref<Audio::AudioBank>> Audio::audioBanks;
+    std::vector<AudioSourceComponent*> Audio::audioSources;
+    std::vector<AudioListenerComponent*> Audio::audioListeners;
 
     void Audio::Init()
     {
@@ -50,133 +41,163 @@ namespace Coffee
 
         g_lowLevelIO->SetBasePath(AKTEXT("assets\\audio\\Wwise Project\\GeneratedSoundBanks\\Windows"));
 
-        AkBankID bankID;
-        AK::SoundEngine::LoadBank("Init.bnk", bankID);
-        AK::SoundEngine::LoadBank("CoffeeEngine.bnk", bankID);
+        LoadAudioBanks();
 
-        // Set the listener
-        AkGameObjectID listenerID = 200;
-        RegisterGameObject(100);
-        ReverbSystem::Initialize();
-
-        RegisterGameObject(listenerID);
-
-        AK::SoundEngine::SetDefaultListeners(&listenerID, 1);
-        ReverbSystem::Update();
-
-        PlayEvent("Play_test_sound", 100);
-
-        SetListenerPosition(listenerPos, forward, up);
-
-        AkGameObjectID leftSoundObject = 300;
-        AkGameObjectID rightSoundObject = 301;
-        AkGameObjectID frontSoundObject = 302;
-        AkGameObjectID backSoundObject = 303;
-
-        RegisterGameObject(leftSoundObject);
-        RegisterGameObject(rightSoundObject);
-        RegisterGameObject(frontSoundObject);
-        RegisterGameObject(backSoundObject);
-
-        Play3DSound("Play_test_sound", leftSoundObject, -2000.0f, 0.0f, 0.0f);
-        Play3DSound("Play_test_sound2", rightSoundObject, 2000.0f, 0.0f, 0.0f);
-        Play3DSound("Play_test_sound3", frontSoundObject, 0.0f, 0.0f, 2000.0f);
-        Play3DSound("Play_test_sound4", backSoundObject, 0.0f, 0.0f, -2000.0f);
+        AudioZone::SearchAvailableBusChannels();
     }
 
-    void Audio::RegisterGameObject(AkGameObjectID gameObjectID)
+    void Audio::RegisterGameObject(uint64_t gameObjectID)
     {
         AK::SoundEngine::RegisterGameObj(gameObjectID);
     }
 
-    void Audio::Set3DPosition(AkGameObjectID gameObjectID, glm::vec3& pos, glm::vec3& forward, glm::vec3& up)
+    void Audio::UnregisterGameObject(uint64_t gameObjectID)
+    {
+        AK::SoundEngine::UnregisterGameObj(gameObjectID);
+    }
+
+    void Audio::UnregisterAllGameObjects()
+    {
+        for (auto& audioSource : audioSources)
+        {
+            UnregisterAudioSourceComponent(*audioSource);
+        }
+
+        for (auto& audioListener : audioListeners)
+        {
+            UnregisterAudioListenerComponent(*audioListener);
+        }
+    }
+
+    void Audio::Set3DPosition(uint64_t gameObjectID, glm::vec3 pos, glm::vec3 forward, glm::vec3 up)
     {
         AkSoundPosition newPos;
-        newPos.SetPosition(pos.x, pos.y, pos.z);
-        newPos.SetOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
+        newPos.SetPosition(pos.x, pos.y, -pos.z);
 
+        forward = glm::normalize(glm::vec3(forward.x, forward.y, -forward.z));
+        up = glm::normalize(up - glm::dot(up, forward) * forward);
+
+        newPos.SetOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
         AK::SoundEngine::SetPosition(gameObjectID, newPos);
     }
 
-    void Audio::Play3DSound(const char* eventName, AkGameObjectID gameObjectID, float x, float y, float z)
+    void Audio::PlayEvent(AudioSourceComponent& audioSourceComponent)
     {
-        glm::vec3 position(x, y, z);
-        glm::vec3 forward(0.0f, 0.0f, 1.0f);
-        glm::vec3 up(0.0f, 1.0f, 0.0f);
-
-        Set3DPosition(gameObjectID, position, forward, up);
-
-        PlayEvent(eventName, gameObjectID);
+        AK::SoundEngine::PostEvent(audioSourceComponent.eventName.c_str(), audioSourceComponent.gameObjectID);
+        audioSourceComponent.isPlaying = true;
+        audioSourceComponent.isPaused = false;
     }
 
-    void Audio::SetListenerPosition(glm::vec3& pos, glm::vec3& forward, glm::vec3& up)
+    void Audio::StopEvent(AudioSourceComponent& audioSourceComponent)
     {
-        AkSoundPosition listenerPos;
-        listenerPos.SetPosition(pos.x, pos.y, pos.z);
-        listenerPos.SetOrientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
-
-        AkGameObjectID listenerID = 200; // ID del listener registrado
-        AK::SoundEngine::SetPosition(listenerID, listenerPos);
+        AK::SoundEngine::ExecuteActionOnEvent(audioSourceComponent.eventName.c_str(), AK::SoundEngine::AkActionOnEventType_Stop, audioSourceComponent.gameObjectID);
+        audioSourceComponent.isPlaying = false;
+        audioSourceComponent.isPaused = false;
     }
 
-    void Audio::PlayEvent(const char* eventName, AkGameObjectID gameObjectID)
+    void Audio::PauseEvent(AudioSourceComponent& audioSourceComponent)
     {
-        AK::SoundEngine::PostEvent(eventName, gameObjectID);
+        AK::SoundEngine::ExecuteActionOnEvent(audioSourceComponent.eventName.c_str(), AK::SoundEngine::AkActionOnEventType_Pause, audioSourceComponent.gameObjectID);
+        audioSourceComponent.isPaused = true;
     }
 
-    void Audio::SetSwitch(const char* switchGroup, const char* switchState, AkGameObjectID gameObjectID)
+    void Audio::ResumeEvent(AudioSourceComponent& audioSourceComponent)
+    {
+        AK::SoundEngine::ExecuteActionOnEvent(audioSourceComponent.eventName.c_str(), AK::SoundEngine::AkActionOnEventType_Resume, audioSourceComponent.gameObjectID);
+        audioSourceComponent.isPaused = false;
+    }
+
+    void Audio::SetSwitch(const char* switchGroup, const char* switchState, uint64_t gameObjectID)
     {
         AK::SoundEngine::SetSwitch(switchGroup, switchState, gameObjectID);
     }
 
+    void Audio::SetVolume(uint64_t gameObjectID, float newVolume)
+    {
+        AK::SoundEngine::SetGameObjectOutputBusVolume(gameObjectID, AK_INVALID_GAME_OBJECT, newVolume);
+    }
+
+    void Audio::RegisterAudioSourceComponent(AudioSourceComponent& audioSourceComponent)
+    {
+        for (const auto& source : audioSources)
+        {
+            if (source->gameObjectID == audioSourceComponent.gameObjectID)
+                return;
+        }
+
+        if (audioSourceComponent.gameObjectID == -1)
+            audioSourceComponent.gameObjectID = UUID();
+
+        audioSources.push_back(&audioSourceComponent);
+
+        RegisterGameObject(audioSourceComponent.gameObjectID);
+    }
+
+    void Audio::UnregisterAudioSourceComponent(AudioSourceComponent& audioSourceComponent)
+    {
+        if (!audioSourceComponent.eventName.empty() && audioSourceComponent.isPlaying)
+            StopEvent(audioSourceComponent);
+
+        audioSourceComponent.toDelete = true;
+
+        AudioZone::UnregisterObject(audioSourceComponent.gameObjectID);
+
+        UnregisterGameObject(audioSourceComponent.gameObjectID);
+
+        auto it = std::ranges::find(audioSources, &audioSourceComponent);
+        audioSources.erase(it);
+    }
+
+    void Audio::RegisterAudioListenerComponent(AudioListenerComponent& audioListenerComponent)
+    {
+        for (const auto* listener : audioListeners)
+        {
+            if (listener->gameObjectID == audioListenerComponent.gameObjectID)
+                return;
+        }
+
+        if (audioListenerComponent.gameObjectID == -1)
+            audioListenerComponent.gameObjectID = UUID();
+
+        audioListeners.push_back(&audioListenerComponent);
+
+        RegisterGameObject(audioListenerComponent.gameObjectID);
+        AK::SoundEngine::SetDefaultListeners(&audioListenerComponent.gameObjectID, audioListeners.size());
+    }
+
+    void Audio::UnregisterAudioListenerComponent(AudioListenerComponent& audioListenerComponent)
+    {
+        UnregisterGameObject(audioListenerComponent.gameObjectID);
+
+        audioListenerComponent.toDelete = true;
+
+        auto it = std::ranges::find(audioListeners, &audioListenerComponent);
+        audioListeners.erase(it);
+    }
+
+    void Audio::PlayInitialAudios()
+    {
+        for (auto& audioSource : audioSources)
+        {
+            if (audioSource->playOnAwake)
+                PlayEvent(*audioSource);
+        }
+    }
+
+    void Audio::StopAllEvents()
+    {
+        for (auto& audioSource : audioSources)
+        {
+            if (audioSource->isPlaying)
+                StopEvent(*audioSource);
+        }
+    }
+
     void Audio::ProcessAudio()
     {
-        ReverbSystem::Update();
-      
-        static float elapsedTime = 0.0f;
-        elapsedTime += 0.001f;
-
-        if (frontMovingRight)
-            frontSoundObjectPos.x += frontSpeed * elapsedTime;
-        else
-            frontSoundObjectPos.x -= frontSpeed * elapsedTime;
-
-        if (frontSoundObjectPos.x > 200.0f)
-            frontMovingRight = false;
-        else if (frontSoundObjectPos.x < -200.0f)
-            frontMovingRight = true;
-
-        if (backMovingUp)
-            backSoundObjectPos.y += backSpeed * elapsedTime;
-        else
-            backSoundObjectPos.y -= backSpeed * elapsedTime;
-
-        if (backSoundObjectPos.y > 200.0f)
-            backMovingUp = false;
-        else if (backSoundObjectPos.y < -200.0f)
-            backMovingUp = true;
-
-        glm::vec3 forward(0.0f, 0.0f, 1.0f);
-        glm::vec3 up(0.0f, 1.0f, 0.0f);
-
-        Set3DPosition(302, frontSoundObjectPos, forward, up);
-        Set3DPosition(303, backSoundObjectPos, forward, up);
+        AudioZone::Update();
 
         AK::SoundEngine::RenderAudio();
-
-        if (listenerMovingForward)
-            listenerPos.z += listenerSpeed * elapsedTime;
-        else
-            listenerPos.z -= listenerSpeed * elapsedTime;
-
-        if (listenerPos.z > 200.0f)
-            listenerMovingForward = false;
-        else if (listenerPos.z < -200.0f)
-            listenerMovingForward = true;
-
-        SetListenerPosition(listenerPos, forward, up);
-
-        elapsedTime = 0.0f;
     }
 
     bool Audio::InitializeMemoryManager()
@@ -275,8 +296,65 @@ namespace Coffee
         return true;
     }
 
+    bool Audio::LoadAudioBanks()
+    {
+        std::ifstream file("Assets\\Audio\\Wwise Project\\GeneratedSoundBanks\\Windows\\SoundbanksInfo.json");
+        if (!file.is_open())
+            return false;
+
+        std::stringstream buffer;
+        buffer << file.rdbuf();
+        file.close();
+
+        rapidjson::Document banksInfo;
+        if (banksInfo.Parse(buffer.str().c_str()).HasParseError()
+            || !banksInfo.HasMember("SoundBanksInfo")
+            || !banksInfo["SoundBanksInfo"].HasMember("SoundBanks"))
+        {
+            return false;
+        }
+
+        const auto& soundBanks = banksInfo["SoundBanksInfo"]["SoundBanks"];
+        if (!soundBanks.IsArray())
+            return false;
+
+        for (const auto& bankData : soundBanks.GetArray())
+        {
+            if (!bankData.HasMember("ShortName") || !bankData["ShortName"].IsString())
+                continue;
+
+            const std::string shortName = bankData["ShortName"].GetString();
+
+            auto audioBank = CreateRef<AudioBank>();
+            audioBank->name = shortName;
+
+            if (bankData.HasMember("Events") && bankData["Events"].IsArray())
+            {
+                for (const auto& eventData : bankData["Events"].GetArray())
+                {
+                    if (eventData.HasMember("Name") && eventData["Name"].IsString())
+                    {
+                        std::string eventName = eventData["Name"].GetString();
+                        audioBank->events.push_back(eventName);
+                    }
+                }
+            }
+
+            AkBankID bankID;
+            AK::SoundEngine::LoadBank(audioBank->name.c_str(), bankID);
+
+            audioBanks.push_back(audioBank);
+        }
+
+        return true;
+    }
+
     void Audio::Shutdown()
     {
+        AudioZone::Shutdown();
+
+        UnregisterAllGameObjects();
+
         // Unload the soundbanks
         AK::SoundEngine::ClearBanks();
 

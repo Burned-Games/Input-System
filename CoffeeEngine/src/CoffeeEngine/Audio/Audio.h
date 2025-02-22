@@ -20,11 +20,21 @@
 #include <AK/Comm/AkCommunication.h> // Communication (for debug builds)
 #endif
 
+#include "CoffeeEngine/Core/Base.h"
+#include "AudioZone.h"
+
 #include <AkFilePackageLowLevelIODeferred.h> // File I/O
 
 #include <glm/vec3.hpp>
+#include <vector>
+#include <string>
+
+#include <cereal/cereal.hpp>
 
 namespace Coffee {
+
+    struct AudioSourceComponent;
+    struct AudioListenerComponent;
 
     /**
      * @class Audio
@@ -51,22 +61,137 @@ namespace Coffee {
 
         /**
          * @brief Plays an event.
-         * @param eventName The name of the event.
+         * @param audioSourceComponent The audio source component.
+         */
+        static void PlayEvent(AudioSourceComponent& audioSourceComponent);
+
+        /**
+         * @brief Stops an event.
+         * @param audioSourceComponent The audio source component.
+         */
+        static void StopEvent(AudioSourceComponent& audioSourceComponent);
+
+        /**
+         * @brief Pauses an event.
+         * @param audioSourceComponent The audio source component.
+         */
+        static void PauseEvent(AudioSourceComponent& audioSourceComponent);
+
+        /**
+         * @brief Resumes an event.
+         * @param audioSourceComponent The audio source component.
+         */
+        static void ResumeEvent(AudioSourceComponent& audioSourceComponent);
+
+        /**
+         * @brief Sets a switch.
+         * @param switchGroup The name of the switch group.
+         * @param switchState The name of the switch state.
          * @param gameObjectID The game object ID.
          */
-        static void PlayEvent(const char* eventName, AkGameObjectID gameObjectID);
+        static void SetSwitch(const char* switchGroup, const char* switchState, uint64_t gameObjectID);
 
-        static void SetSwitch(const char* switchGroup, const char* switchState, AkGameObjectID gameObjectID);
-
-        static void Play3DSound(const char* eventName, AkGameObjectID gameObjectID, float x, float y, float z);
-        static void Set3DPosition(AkGameObjectID gameObjectID, glm::vec3& pos, glm::vec3& forward, glm::vec3& up);
-        static void SetListenerPosition(glm::vec3& pos, glm::vec3& forward, glm::vec3& up);
+        /**
+         * @brief Sets the position of a game object.
+         * @param gameObjectID The game object ID.
+         * @param pos Position.
+         * @param forward Forward.
+         * @param up Up.
+         */
+        static void Set3DPosition(uint64_t gameObjectID, glm::vec3 pos, glm::vec3 forward, glm::vec3 up);
 
         /**
          * @brief Register a game object.
          * @param gameObjectID The game object ID.
          */
-        static void RegisterGameObject(AkGameObjectID gameObjectID);
+        static void RegisterGameObject(uint64_t gameObjectID);
+
+        /**
+         * @brief Unregister a game object.
+         * @param gameObjectID The game object ID.
+         */
+        static void UnregisterGameObject(uint64_t gameObjectID);
+
+        /**
+         * @brief Unregister all game objects.
+         */
+        static void UnregisterAllGameObjects();
+
+        /**
+         * @brief Audio bank.
+         */
+        struct AudioBank
+        {
+            std::string name; ///< The name of the bank.
+            std::vector<std::string> events; ///< The events of the bank.
+
+            /**
+             * @brief Serializes the AudioBank.
+             * @tparam Archive The type of the archive.
+             * @param archive The archive to serialize to.
+             */
+            template<class Archive>
+            void serialize(Archive& archive)
+            {
+                archive(cereal::make_nvp("Name", name), cereal::make_nvp("Events", events));
+            }
+        };
+
+        /**
+         * @brief Audio banks.
+         */
+        static std::vector<Ref<AudioBank>> audioBanks;
+
+        /**
+         * @brief Set the volume of a game object.
+         * @param gameObjectID The game object ID.
+         * @param newVolume The new volume.
+         */
+        static void SetVolume(uint64_t gameObjectID, float newVolume);
+
+        /**
+         * @brief Audio source components.
+         */
+        static std::vector<AudioSourceComponent*> audioSources;
+
+        /**
+         * @brief Register an audio source component.
+         * @param audioSourceComponent The audio source component.
+         */
+        static void RegisterAudioSourceComponent(AudioSourceComponent& audioSourceComponent);
+
+        /**
+         * @brief Unregister an audio source component.
+         * @param audioSourceComponent The audio source component.
+         */
+        static void UnregisterAudioSourceComponent(AudioSourceComponent& audioSourceComponent);
+
+        /**
+         * @brief Audio listener components.
+         */
+        static std::vector<AudioListenerComponent*> audioListeners;
+
+        /**
+         * @brief Register an audio listener component.
+         * @param audioListenerComponent The audio listener component.
+         */
+        static void RegisterAudioListenerComponent(AudioListenerComponent& audioListenerComponent);
+
+        /**
+         * @brief Unregister an audio listener component.
+         * @param audioListenerComponent The audio listener component.
+         */
+        static void UnregisterAudioListenerComponent(AudioListenerComponent& audioListenerComponent);
+
+        /**
+         * @brief Play the audio sources chosen to play on awake.
+         */
+        static void PlayInitialAudios();
+
+        /**
+         * @brief Stop all audio events.
+         */
+        static void StopAllEvents();
 
     private:
 
@@ -114,6 +239,11 @@ namespace Coffee {
         static bool InitializeCommunicationModule();
 #endif // AK_OPTIMIZED
 
+        /**
+         * @brief Loads audio banks.
+         * @return True if successful, false otherwise.
+         */
+        static bool LoadAudioBanks();
     };
 
 }
