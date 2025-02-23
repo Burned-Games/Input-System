@@ -3,12 +3,14 @@
 #include "CoffeeEngine/Core/ControllerCodes.h"
 #include "CoffeeEngine/Core/KeyCodes.h"
 #include "CoffeeEngine/Core/MouseCodes.h"
+#include "CoffeeEngine/Input/Gamepad.h"
 #include "CoffeeEngine/Events/ControllerEvent.h"
 
 #include "CoffeeEngine/Events/Event.h"
-#include "CoffeeEngine/Input/Gamepad.h"
 
+#include <SDL3/SDL_gamepad.h>
 #include <glm/glm.hpp>
+#include <unordered_map>
 
 namespace Coffee {
 	// TODO Change for better action map layers method?
@@ -76,55 +78,23 @@ namespace Coffee {
 
 		static InputLayer CurrentInputContext;
 
-
-	    /**
-	     * Initializes the module
-	     */
-        static void Init();
-
-		/**
-		 * Checks if a specific key is currently being pressed.
-		 *
-		 * @param key The key code of the key to check.
-		 * @return True if the key is currently being pressed, false otherwise.
-		 */
-		static bool IsKeyPressed(const KeyCode key);
-
-		/**
-		 * Checks if a mouse button is currently pressed.
-		 *
-		 * @param button The mouse button to check.
-		 * @return True if the mouse button is pressed, false otherwise.
-		 */
-		static bool IsMouseButtonPressed(const MouseCode button);
-		/**
-		 * Retrieves the current position of the mouse.
-		 *
-		 * @return The current position of the mouse as a 2D vector.
-		 */
-		static glm::vec2 GetMousePosition();
-		/**
-		 * @brief Retrieves the current x-coordinate of the mouse cursor.
-		 *
-		 * @return The x-coordinate of the mouse cursor.
-		 */
-		static float GetMouseX();
-		/**
-		 * @brief Retrieves the current y-coordinate of the mouse cursor.
-		 *
-		 * @return The y-coordinate of the mouse cursor.
-		 */
-		static float GetMouseY();
-        static void OnAddController(ControllerAddEvent* cEvent);
-        static void OnRemoveController(ControllerRemoveEvent* c_event);
+        void Init();
 
         static void OnEvent(Event& e);
 
 	    private:
-	    static std::vector<InputBinding> m_bindings;
 
-	    static Ref<Gamepad> m_activeController;
+	    static void OnAddController(ControllerAddEvent* cEvent);
+	    static void OnRemoveController(ControllerRemoveEvent* event);
+        static void OnButtonPressed(ButtonPressEvent& e);
+        static void OnButtonReleased(ButtonReleaseEvent& e);
+        static void OnAxisMoved(AxisMoveEvent& e);
+
+        static std::vector<InputBinding> m_bindings;
+
 	    static std::vector<Ref<Gamepad>> m_gamepads;
+	    static std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> m_buttonStates;
+	    static std::unordered_map<ControllerCode, std::unordered_map<AxisCode, float>> m_axisStates;
 	};
     /** @} */
 }
