@@ -155,6 +155,48 @@ namespace Coffee {
             case sol::type::string:
                 value = object.as<std::string>();
                 break;
+            case sol::type::table: {
+                sol::table table = object.as<sol::table>();
+                int count = 0;
+                if (table["x"].valid())
+                    count++;
+                if (table["y"].valid())
+                    count++;
+                if (table["z"].valid())
+                    count++;
+                if (table["w"].valid())
+                    count++;
+
+                if (count == 2)
+                {
+                    glm::vec2 vec;
+                    vec.x = table["x"];
+                    vec.y = table["y"];
+                    value = vec;
+                }
+                else if (count == 3)
+                {
+                    glm::vec3 vec;
+                    vec.x = table["x"];
+                    vec.y = table["y"];
+                    vec.z = table["z"];
+                    value = vec;
+                }
+                else if (count == 4)
+                {
+                    glm::vec4 vec;
+                    vec.x = table["x"];
+                    vec.y = table["y"];
+                    vec.z = table["z"];
+                    vec.w = table["w"];
+                    value = vec;
+                }
+                else
+                {
+                    value = nullptr;
+                }
+                break;
+            }
             case sol::type::userdata:
                 if(object.is<Entity>())
                 {
@@ -183,6 +225,35 @@ namespace Coffee {
                 return ExportedVariableType::Float;
             case sol::type::string:
                 return ExportedVariableType::String;
+            case sol::type::table: {
+                sol::table table = object.as<sol::table>();
+                int count = 0;
+                if (table["x"].valid())
+                    count++;
+                if (table["y"].valid())
+                    count++;
+                if (table["z"].valid())
+                    count++;
+                if (table["w"].valid())
+                    count++;
+                if (count == 2)
+                {
+                    return ExportedVariableType::Vector2;
+                }
+                else if (count == 3)
+                {
+                    return ExportedVariableType::Vector3;
+                }
+                else if (count == 4)
+                {
+                    return ExportedVariableType::Vector4;
+                }
+                else
+                {
+                    return ExportedVariableType::None;
+                }
+                break;
+            }
             case sol::type::userdata:
                 if (object.is<Entity>()) {
                     return ExportedVariableType::Entity;

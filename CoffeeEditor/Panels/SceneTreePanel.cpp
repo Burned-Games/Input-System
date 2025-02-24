@@ -648,6 +648,37 @@ namespace Coffee {
                         }
                         break;
                     }
+                    case ExportedVariableType::Vector2: {
+                        glm::vec2 value =
+                            variable.value.has_value() ? std::any_cast<glm::vec2>(variable.value) : glm::vec2{};
+                        if (ImGui::DragFloat2(name.c_str(), glm::value_ptr(value)))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
+                    case ExportedVariableType::Vector3: {
+                        glm::vec3 value =
+                            variable.value.has_value() ? std::any_cast<glm::vec3>(variable.value) : glm::vec3{};
+                        if (ImGui::DragFloat3(name.c_str(), glm::value_ptr(value)))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
+                    case ExportedVariableType::Vector4: {
+                        glm::vec4 value =
+                            variable.value.has_value() ? std::any_cast<glm::vec4>(variable.value) : glm::vec4{};
+                        if (ImGui::DragFloat4(name.c_str(), glm::value_ptr(value)))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
+                    
                     }
                 }
             }
