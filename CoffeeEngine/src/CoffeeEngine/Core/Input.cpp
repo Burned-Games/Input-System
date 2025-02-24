@@ -53,6 +53,34 @@ namespace Coffee {
         return GetMousePosition().y;
     }
 
+    bool Input::GetButton(ButtonCode button, ControllerCode controller)
+    {
+        if (controller == 0) return false;
+
+        auto controllerIt = m_buttonStates.find(controller);
+        if (controllerIt != m_buttonStates.end())
+        {
+            const auto& buttonMap = controllerIt->second;
+            auto buttonIt = buttonMap.find(button);
+            return (buttonIt != buttonMap.end()) ? buttonIt->second : false;
+        }
+        return false;
+    }
+
+    float Input::GetAxis(AxisCode axis, ControllerCode controller)
+    {
+        if (controller == 0) return 0.0f;
+
+        auto controllerIt = m_axisStates.find(controller);
+        if (controllerIt != m_axisStates.end())
+        {
+            const auto& axisMap = controllerIt->second;
+            auto axisIt = axisMap.find(axis);
+            return (axisIt != axisMap.end()) ? axisIt->second : 0.0f;
+        }
+        return 0.0f;
+    }
+
     void Input::OnAddController(ControllerAddEvent* event)
     {
         m_gamepads.emplace_back(new Gamepad(event->Controller));

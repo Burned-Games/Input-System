@@ -115,6 +115,23 @@ namespace Coffee {
          */
 
         static float GetMouseY();
+        /**
+         * @brief Checks if a specific button is currently pressed on a given controller.
+         *
+         * @param button The button code to check.
+         * @param controller The controller code (default is 0, meaning invalid controller).
+         * @return True if the button is pressed, false otherwise.
+         */
+        static bool GetButton(ButtonCode button, ControllerCode controller);
+        /**
+         * @brief Retrieves the current value of an axis on a given controller.
+         *
+         * @param axis The axis code to check.
+         * @param controller The controller code (default is 0, meaning invalid controller).
+         * @return The axis value, usually between -1 and 1. Returns 0 if the controller is invalid.
+         */
+        static float GetAxis(AxisCode axis, ControllerCode controller);
+
 		static InputLayer CurrentInputContext;
 
         static void OnEvent(Event& e);
