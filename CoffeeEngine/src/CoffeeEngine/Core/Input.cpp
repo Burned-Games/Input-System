@@ -13,6 +13,7 @@ namespace Coffee {
     std::vector<Ref<Gamepad>> Input::m_gamepads;
     std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> Input::m_buttonStates;
     std::unordered_map<ControllerCode, std::unordered_map<AxisCode, float>> Input::m_axisStates;
+    std::vector<InputBinding> Input::m_bindings = std::vector<InputBinding>(static_cast<int>(InputAction::ActionCount));
 
     void Input::Init()
     {
@@ -21,10 +22,6 @@ namespace Coffee {
         COFFEE_CORE_INFO("Input initialized");
     }
 
-    void Input::OnAddController(ControllerAddEvent* event)
-    {
-        m_gamepads.emplace_back(new Gamepad(event->Controller));
-    }
 
      bool Input::IsKeyPressed(const KeyCode key)
     {
@@ -56,6 +53,12 @@ namespace Coffee {
         return GetMousePosition().y;
     }
 
+    void Input::OnAddController(ControllerAddEvent* event)
+    {
+        m_gamepads.emplace_back(new Gamepad(event->Controller));
+    }
+
+
     void Input::OnRemoveController(ControllerRemoveEvent* event)
     {
         // Remove controller by SDL_Gamepad ID
@@ -64,19 +67,19 @@ namespace Coffee {
         };
         erase_if(m_gamepads, pred);
     }
-    void Input::OnButtonPressed(ButtonPressEvent& event) {
-        COFFEE_INFO("Gamepad {0} Button {1} Pressed", event.Controller, event.Button);
-        m_buttonStates[event.Controller][event.Button] = true;
+    void Input::OnButtonPressed(ButtonPressEvent& bEvent) {
+        COFFEE_INFO("Gamepad {0} Button {1} Pressed", bEvent.Controller, bEvent.Button);
+        m_buttonStates[bEvent.Controller][bEvent.Button] = true;
     }
 
-    void Input::OnButtonReleased(ButtonReleaseEvent& event) {
-        COFFEE_INFO("Gamepad {0} Button {1} Released", event.Controller, event.Button);
-        m_buttonStates[event.Controller][event.Button] = false;
+    void Input::OnButtonReleased(ButtonReleaseEvent& bEvent) {
+        COFFEE_INFO("Gamepad {0} Button {1} Released", bEvent.Controller, bEvent.Button);
+        m_buttonStates[bEvent.Controller][bEvent.Button] = false;
     }
 
-    void Input::OnAxisMoved(AxisMoveEvent& event) {
-        //COFFEE_INFO("Gamepad {0} Axis {1} value {2}", event.Controller, event.Axis, event.Value);
-        m_axisStates[event.Controller][event.Axis] = event.Value;
+    void Input::OnAxisMoved(AxisMoveEvent& aEvent) {
+        COFFEE_INFO("Gamepad {0} Axis {1} value {2}", aEvent.Controller, aEvent.Axis, aEvent.Value);
+        m_axisStates[aEvent.Controller][aEvent.Axis] = aEvent.Value;
     }
 
     void Input::OnEvent(Event& e)
@@ -119,6 +122,26 @@ namespace Coffee {
                     AxisMoveEvent* aEvent = static_cast<AxisMoveEvent*>(&e);
                     if (aEvent)
                         OnAxisMoved(*aEvent);
+                    break;
+                }
+                case KeyPressed:
+                {
+                    break;
+                }
+                case KeyReleased:
+                {
+                    break;
+                }
+                case MouseButtonReleased:
+                {
+                    break;
+                }
+                case MouseMoved:
+                {
+                    break;
+                }
+                case MouseScrolled:
+                {
                     break;
                 }
 

@@ -132,6 +132,8 @@ namespace Coffee {
 	    static std::vector<Ref<Gamepad>> m_gamepads;
 	    static std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> m_buttonStates;
 	    static std::unordered_map<ControllerCode, std::unordered_map<AxisCode, float>> m_axisStates;
+	    static std::unordered_map<KeyCode, bool> m_keyStates;
+
 	};
     /** @} */
 }
