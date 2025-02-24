@@ -26,6 +26,36 @@ namespace Coffee {
         m_gamepads.emplace_back(new Gamepad(event->Controller));
     }
 
+     bool Input::IsKeyPressed(const KeyCode key)
+    {
+        const bool* state = SDL_GetKeyboardState(nullptr);
+
+        return state[key];
+    }
+
+    bool Input::IsMouseButtonPressed(const MouseCode button)
+    {
+        return SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_MASK(button);
+    }
+
+    glm::vec2 Input::GetMousePosition()
+    {
+        float x, y;
+        SDL_GetMouseState(&x, &y);
+
+        return {x, y};
+    }
+
+    float Input::GetMouseX()
+    {
+        return GetMousePosition().x;
+    }
+
+    float Input::GetMouseY()
+    {
+        return GetMousePosition().y;
+    }
+
     void Input::OnRemoveController(ControllerRemoveEvent* event)
     {
         // Remove controller by SDL_Gamepad ID
@@ -35,14 +65,17 @@ namespace Coffee {
         erase_if(m_gamepads, pred);
     }
     void Input::OnButtonPressed(ButtonPressEvent& event) {
+        COFFEE_INFO("Gamepad {0} Button {1} Pressed", event.Controller, event.Button);
         m_buttonStates[event.Controller][event.Button] = true;
     }
 
     void Input::OnButtonReleased(ButtonReleaseEvent& event) {
+        COFFEE_INFO("Gamepad {0} Button {1} Released", event.Controller, event.Button);
         m_buttonStates[event.Controller][event.Button] = false;
     }
 
     void Input::OnAxisMoved(AxisMoveEvent& event) {
+        //COFFEE_INFO("Gamepad {0} Axis {1} value {2}", event.Controller, event.Axis, event.Value);
         m_axisStates[event.Controller][event.Axis] = event.Value;
     }
 
