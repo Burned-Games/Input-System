@@ -580,8 +580,7 @@ namespace Coffee {
                 {
                     switch (variable.type)
                     {
-                    case ExportedVariableType::Bool:
-                    {
+                    case ExportedVariableType::Bool: {
                         bool value = variable.value.has_value() ? std::any_cast<bool>(variable.value) : false;
                         if (ImGui::Checkbox(name.c_str(), &value))
                         {
@@ -590,8 +589,7 @@ namespace Coffee {
                         }
                         break;
                     }
-                    case ExportedVariableType::Int:
-                    {
+                    case ExportedVariableType::Int: {
                         int value = variable.value.has_value() ? std::any_cast<int>(variable.value) : 0;
                         if (ImGui::InputInt(name.c_str(), &value))
                         {
@@ -600,8 +598,7 @@ namespace Coffee {
                         }
                         break;
                     }
-                    case ExportedVariableType::Float:
-                    {
+                    case ExportedVariableType::Float: {
                         float value = variable.value.has_value() ? std::any_cast<float>(variable.value) : 0.0f;
                         if (ImGui::InputFloat(name.c_str(), &value))
                         {
@@ -610,21 +607,21 @@ namespace Coffee {
                         }
                         break;
                     }
-                    case ExportedVariableType::String:
-                    {
-                        std::string value = variable.value.has_value() ? std::any_cast<std::string>(variable.value) : "";
+                    case ExportedVariableType::String: {
+                        std::string value =
+                            variable.value.has_value() ? std::any_cast<std::string>(variable.value) : "";
                         char buffer[256];
                         memset(buffer, 0, sizeof(buffer));
                         strcpy(buffer, value.c_str());
                         if (ImGui::InputText(name.c_str(), buffer, sizeof(buffer)))
                         {
-                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, std::string(buffer));
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)
+                                ->SetVariable(name, std::string(buffer));
                             variable.value = std::string(buffer);
                         }
                         break;
                     }
-                    case ExportedVariableType::Entity:
-                    {
+                    case ExportedVariableType::Entity: {
                         Entity value = variable.value.has_value() ? std::any_cast<Entity>(variable.value) : Entity{};
                         if (ImGui::Button(name.c_str()))
                         {
@@ -635,12 +632,13 @@ namespace Coffee {
                             auto view = m_Context->m_Registry.view<TagComponent>();
                             for (auto entityID : view)
                             {
-                                Entity e{ entityID, m_Context.get() };
+                                Entity e{entityID, m_Context.get()};
                                 auto& tag = e.GetComponent<TagComponent>().Tag;
                                 if (ImGui::Selectable(tag.c_str()))
                                 {
                                     value = e;
-                                    std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                                    std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)
+                                        ->SetVariable(name, value);
                                     variable.value = value;
                                 }
                             }
@@ -678,7 +676,6 @@ namespace Coffee {
                         }
                         break;
                     }
-                    
                     }
                 }
             }
