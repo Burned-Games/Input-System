@@ -109,8 +109,18 @@ namespace Coffee {
     }
 
     void Input::OnAxisMoved(AxisMoveEvent& e) {
-        COFFEE_INFO("Gamepad {0} Axis {1} value {2}", e.Controller, e.Axis, e.Value);
-        m_axisStates[e.Controller][e.Axis] = e.Value;
+
+        constexpr float DEADZONE = 0.15f;
+
+        float normalizedValue = e.Value / 32767.0f;
+
+        if (std::abs(normalizedValue) < DEADZONE)
+        {
+            normalizedValue = 0.0f;
+        }
+
+        COFFEE_INFO("Gamepad {0} Axis {1} value {2}", e.Controller, e.Axis, normalizedValue);
+        m_axisStates[e.Controller][e.Axis] = normalizedValue;
     }
     void Input::OnKeyPressed(const KeyPressedEvent& kEvent) {
         COFFEE_INFO("Key {0} Pressed", kEvent.GetKeyCode());
