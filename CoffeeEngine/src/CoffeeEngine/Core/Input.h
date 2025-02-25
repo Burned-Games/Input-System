@@ -5,6 +5,8 @@
 #include "CoffeeEngine/Core/MouseCodes.h"
 #include "CoffeeEngine/Input/Gamepad.h"
 #include "CoffeeEngine/Events/ControllerEvent.h"
+#include "CoffeeEngine/Events/KeyEvent.h"
+#include "CoffeeEngine/Events/MouseEvent.h"
 
 #include "CoffeeEngine/Events/Event.h"
 
@@ -138,11 +140,16 @@ namespace Coffee {
 
 	    private:
 
-	    static void OnAddController(ControllerAddEvent* cEvent);
-	    static void OnRemoveController(ControllerRemoveEvent* event);
+	    static void OnAddController(const ControllerAddEvent* cEvent);
+	    static void OnRemoveController(ControllerRemoveEvent* cEvent);
         static void OnButtonPressed(ButtonPressEvent& e);
         static void OnButtonReleased(ButtonReleaseEvent& e);
         static void OnAxisMoved(AxisMoveEvent& e);
+	    static void OnKeyPressed(const KeyPressedEvent& event);
+	    static void OnKeyReleased(const KeyReleasedEvent& event);
+	    static void OnMouseButtonPressed(const MouseButtonPressedEvent& event);
+	    static void OnMouseButtonReleased(const MouseButtonReleasedEvent& event);
+	    static void OnMouseMoved(const MouseMovedEvent& event);
 
         static std::vector<InputBinding> m_bindings;
 

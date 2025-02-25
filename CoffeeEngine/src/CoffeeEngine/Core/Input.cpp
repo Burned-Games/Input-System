@@ -2,6 +2,8 @@
 
 #include "CoffeeEngine/Events/ControllerEvent.h"
 #include "CoffeeEngine/Events/Event.h"
+#include "CoffeeEngine/Events/KeyEvent.h"
+#include "CoffeeEngine/Events/MouseEvent.h"
 #include "SDL3/SDL_keyboard.h"
 #include "SDL3/SDL_mouse.h"
 
@@ -14,6 +16,7 @@ namespace Coffee {
     std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> Input::m_buttonStates;
     std::unordered_map<ControllerCode, std::unordered_map<AxisCode, float>> Input::m_axisStates;
     std::vector<InputBinding> Input::m_bindings = std::vector<InputBinding>(static_cast<int>(InputAction::ActionCount));
+
 
     void Input::Init()
     {
@@ -53,7 +56,7 @@ namespace Coffee {
         return GetMousePosition().y;
     }
 
-    bool Input::GetButton(ButtonCode button, ControllerCode controller)
+    bool Input::GetButton(const ButtonCode button, const ControllerCode controller)
     {
         if (controller == 0) return false;
 
@@ -67,7 +70,7 @@ namespace Coffee {
         return false;
     }
 
-    float Input::GetAxis(AxisCode axis, ControllerCode controller)
+    float Input::GetAxis(const AxisCode axis, const ControllerCode controller)
     {
         if (controller == 0) return 0.0f;
 
@@ -81,33 +84,52 @@ namespace Coffee {
         return 0.0f;
     }
 
-    void Input::OnAddController(ControllerAddEvent* event)
+    void Input::OnAddController(const ControllerAddEvent* cEvent)
     {
-        m_gamepads.emplace_back(new Gamepad(event->Controller));
+        m_gamepads.emplace_back(new Gamepad(cEvent->Controller));
     }
 
 
-    void Input::OnRemoveController(ControllerRemoveEvent* event)
+    void Input::OnRemoveController(ControllerRemoveEvent* cEvent)
     {
         // Remove controller by SDL_Gamepad ID
-        auto pred = [&event](const Ref<Gamepad>& gamepad) {
-            return gamepad->getId() == event->Controller;
+        auto pred = [&cEvent](const Ref<Gamepad>& gamepad) {
+            return gamepad->getId() == cEvent->Controller;
         };
         erase_if(m_gamepads, pred);
     }
-    void Input::OnButtonPressed(ButtonPressEvent& bEvent) {
-        COFFEE_INFO("Gamepad {0} Button {1} Pressed", bEvent.Controller, bEvent.Button);
-        m_buttonStates[bEvent.Controller][bEvent.Button] = true;
+    void Input::OnButtonPressed(ButtonPressEvent& e) {
+        COFFEE_INFO("Gamepad {0} Button {1} Pressed", e.Controller, e.Button);
+        m_buttonStates[e.Controller][e.Button] = true;
     }
 
-    void Input::OnButtonReleased(ButtonReleaseEvent& bEvent) {
-        COFFEE_INFO("Gamepad {0} Button {1} Released", bEvent.Controller, bEvent.Button);
-        m_buttonStates[bEvent.Controller][bEvent.Button] = false;
+    void Input::OnButtonReleased(ButtonReleaseEvent& e) {
+        COFFEE_INFO("Gamepad {0} Button {1} Released", e.Controller, e.Button);
+        m_buttonStates[e.Controller][e.Button] = false;
     }
 
-    void Input::OnAxisMoved(AxisMoveEvent& aEvent) {
-        COFFEE_INFO("Gamepad {0} Axis {1} value {2}", aEvent.Controller, aEvent.Axis, aEvent.Value);
-        m_axisStates[aEvent.Controller][aEvent.Axis] = aEvent.Value;
+    void Input::OnAxisMoved(AxisMoveEvent& e) {
+        COFFEE_INFO("Gamepad {0} Axis {1} value {2}", e.Controller, e.Axis, e.Value);
+        m_axisStates[e.Controller][e.Axis] = e.Value;
+    }
+    void Input::OnKeyPressed(const KeyPressedEvent& kEvent) {
+        COFFEE_INFO("Key {0} Pressed", kEvent.GetKeyCode());
+    }
+
+    void Input::OnKeyReleased(const KeyReleasedEvent& kEvent) {
+        COFFEE_INFO("Key {0} Released", kEvent.GetKeyCode());
+    }
+
+    void Input::OnMouseButtonPressed(const MouseButtonPressedEvent& mEvent) {
+        COFFEE_INFO("Mouse Button {0} Pressed", mEvent.GetMouseButton());
+    }
+
+    void Input::OnMouseButtonReleased(const MouseButtonReleasedEvent& mEvent) {
+        COFFEE_INFO("Mouse Button {0} Released", mEvent.GetMouseButton());
+    }
+
+    void Input::OnMouseMoved(const MouseMovedEvent& mEvent) {
+        COFFEE_INFO("Mouse Moved: {0}, {1}", mEvent.GetX(), mEvent.GetY());
     }
 
     void Input::OnEvent(Event& e)
@@ -154,22 +176,37 @@ namespace Coffee {
                 }
                 case KeyPressed:
                 {
+                    KeyPressedEvent* kEvent = static_cast<KeyPressedEvent*>(&e);
+                    if (kEvent)
+                        OnKeyPressed(*kEvent);
                     break;
                 }
                 case KeyReleased:
                 {
+                    KeyReleasedEvent* kEvent = static_cast<KeyReleasedEvent*>(&e);
+                    if (kEvent)
+                        OnKeyReleased(*kEvent);
+                    break;
+                }
+                case MouseButtonPressed:
+                {
+                    MouseButtonPressedEvent* mEvent = static_cast<MouseButtonPressedEvent*>(&e);
+                    if (mEvent)
+                        OnMouseButtonPressed(*mEvent);
                     break;
                 }
                 case MouseButtonReleased:
                 {
+                    MouseButtonReleasedEvent* mEvent = static_cast<MouseButtonReleasedEvent*>(&e);
+                    if (mEvent)
+                        OnMouseButtonReleased(*mEvent);
                     break;
                 }
                 case MouseMoved:
                 {
-                    break;
-                }
-                case MouseScrolled:
-                {
+                    MouseMovedEvent* mEvent = static_cast<MouseMovedEvent*>(&e);
+                    if (mEvent)
+                        OnMouseMoved(*mEvent);
                     break;
                 }
 
