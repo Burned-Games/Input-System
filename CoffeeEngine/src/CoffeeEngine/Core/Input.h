@@ -7,6 +7,8 @@
 #include "CoffeeEngine/Events/ControllerEvent.h"
 #include "CoffeeEngine/Events/KeyEvent.h"
 #include "CoffeeEngine/Events/MouseEvent.h"
+#include "CoffeeEngine/Input/InputBinding.h"
+
 
 #include "CoffeeEngine/Events/Event.h"
 
@@ -56,7 +58,6 @@ namespace Coffee {
      * @{
      */
 
-    class InputBinding;
 	class Input
 	{
 	public:
@@ -134,7 +135,7 @@ namespace Coffee {
 	    static void OnMouseButtonReleased(const MouseButtonReleasedEvent& event);
 	    static void OnMouseMoved(const MouseMovedEvent& event);
 
-        static std::vector<InputBinding> m_bindings;
+        static std::vector<Coffee::InputBinding> m_bindings;
 
 	    static std::vector<Ref<Gamepad>> m_gamepads;
 	    static std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> m_buttonStates;
@@ -143,38 +144,4 @@ namespace Coffee {
 
 	};
     /** @} */
-
-      /** Struct containing input details for a given action.
-     *
-     */
-    class InputBinding
-    {
-        std::string Name = "Undefined";
-
-        // Digital inputs
-        KeyCode KeyPos = Key::UNKNOWN;          // Positive keyboard key
-        KeyCode KeyNeg = Key::UNKNOWN;          // Negative keyboard key
-        ButtonCode ButtonPos = Button::Invalid; // Positive gamepad button
-        ButtonCode ButtonNeg = Button::Invalid; // Negative gamepad button
-
-        // Analog inputs
-        AxisCode Axis = Axis::Invalid; // Controller axis
-        bool IsAnalog = false;         // Determines if using an analog input
-
-        float GetValue(ControllerCode controller)
-        {
-            if (IsAnalog && Axis != Axis::Invalid)
-            {
-                return Input::GetAxis(Axis, controller);
-            }
-
-            float value = 0.0f;
-            if (Input::IsKeyPressed(KeyPos) || Input::GetButton(ButtonPos, controller))
-                value += 1.0f;
-            if (Input::IsKeyPressed(KeyNeg) || Input::GetButton(ButtonNeg, controller))
-                value -= 1.0f;
-
-            return value;
-        }
-    };
 }
