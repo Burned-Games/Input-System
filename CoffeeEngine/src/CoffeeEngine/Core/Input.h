@@ -50,30 +50,13 @@ namespace Coffee {
         ActionCount
     };
 
-    /** Struct containing input details for a given action.
-     *
-     */
-    class InputBinding
-    {
-		std::string Name = "Undefined";
-
-        // Digital
-        KeyCode KeyPos = Key::UNKNOWN; // Positive keyboard key
-        KeyCode KeyNeg = Key::UNKNOWN; // Negative keyboard key
-        ButtonCode ButtonPos = Button::Invalid; // Positive gamepad button
-        ButtonCode ButtonNeg = Button::Invalid; // Negative gamepad button
-
-        // Analog
-        KeyCode Axis = Axis::Invalid; // Defined axis for analog control
-        float AxisVal = 0; // Axis value
-
-    };
-
     /**
      * @defgroup core Core
      * @brief Core components of the CoffeeEngine.
      * @{
      */
+
+    class InputBinding;
 	class Input
 	{
 	public:
@@ -160,4 +143,38 @@ namespace Coffee {
 
 	};
     /** @} */
+
+      /** Struct containing input details for a given action.
+     *
+     */
+    class InputBinding
+    {
+        std::string Name = "Undefined";
+
+        // Digital inputs
+        KeyCode KeyPos = Key::UNKNOWN;          // Positive keyboard key
+        KeyCode KeyNeg = Key::UNKNOWN;          // Negative keyboard key
+        ButtonCode ButtonPos = Button::Invalid; // Positive gamepad button
+        ButtonCode ButtonNeg = Button::Invalid; // Negative gamepad button
+
+        // Analog inputs
+        AxisCode Axis = Axis::Invalid; // Controller axis
+        bool IsAnalog = false;         // Determines if using an analog input
+
+        float GetValue(ControllerCode controller)
+        {
+            if (IsAnalog && Axis != Axis::Invalid)
+            {
+                return Input::GetAxis(Axis, controller);
+            }
+
+            float value = 0.0f;
+            if (Input::IsKeyPressed(KeyPos) || Input::GetButton(ButtonPos, controller))
+                value += 1.0f;
+            if (Input::IsKeyPressed(KeyNeg) || Input::GetButton(ButtonNeg, controller))
+                value -= 1.0f;
+
+            return value;
+        }
+    };
 }

@@ -111,7 +111,6 @@ namespace Coffee {
     void Input::OnAxisMoved(AxisMoveEvent& e) {
 
         constexpr float DEADZONE = 0.15f;
-
         float normalizedValue = e.Value / 32767.0f;
 
         if (std::abs(normalizedValue) < DEADZONE)
