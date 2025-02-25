@@ -56,7 +56,7 @@ namespace Coffee {
         return GetMousePosition().y;
     }
 
-    bool Input::GetButton(const ButtonCode button, const ControllerCode controller)
+    bool Input::GetButtonRaw(const ButtonCode button, const ControllerCode controller)
     {
         if (controller == 0) return false;
 
@@ -70,7 +70,7 @@ namespace Coffee {
         return false;
     }
 
-    float Input::GetAxis(const AxisCode axis, const ControllerCode controller)
+    float Input::GetAxisRaw(const AxisCode axis, const ControllerCode controller)
     {
         if (controller == 0) return 0.0f;
 

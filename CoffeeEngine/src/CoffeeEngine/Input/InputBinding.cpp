@@ -9,9 +9,9 @@
     }
 
     float value = 0.0f;
-    if (Input::IsKeyPressed(KeyPos) || Input::GetButton(ButtonPos, controller))
+    if (Input::IsKeyPressed(KeyPos) || Input::GetButtonRaw(ButtonPos, controller))
         value += 1.0f;
-    if (Input::IsKeyPressed(KeyNeg) || Input::GetButton(ButtonNeg, controller))
+    if (Input::IsKeyPressed(KeyNeg) || Input::GetButtonRaw(ButtonNeg, controller))
         value -= 1.0f;
 
     return value;

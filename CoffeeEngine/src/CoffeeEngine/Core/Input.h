@@ -108,7 +108,7 @@ namespace Coffee {
          * @param controller The controller code (default is 0, meaning invalid controller).
          * @return True if the button is pressed, false otherwise.
          */
-        static bool GetButton(ButtonCode button, ControllerCode controller);
+        static bool GetButtonRaw(ButtonCode button, ControllerCode controller);
         /**
          * @brief Retrieves the current value of an axis on a given controller.
          *
@@ -116,7 +116,7 @@ namespace Coffee {
          * @param controller The controller code (default is 0, meaning invalid controller).
          * @return The axis value, usually between -1 and 1. Returns 0 if the controller is invalid.
          */
-        static float GetAxis(AxisCode axis, ControllerCode controller);
+        static float GetAxisRaw(AxisCode axis, ControllerCode controller);
 
 		static InputLayer CurrentInputContext;
 
