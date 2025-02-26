@@ -13,8 +13,8 @@
 namespace Coffee {
 
     std::vector<Ref<Gamepad>> Input::m_gamepads;
-    std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> Input::m_buttonStates;
-    std::unordered_map<ControllerCode, std::unordered_map<AxisCode, float>> Input::m_axisStates;
+    std::unordered_map<ButtonCode, char> Input::m_buttonStates;
+    std::unordered_map<AxisCode, float> Input::m_axisStates;
     std::vector<InputBinding> Input::m_bindings = std::vector<InputBinding>(static_cast<int>(InputAction::ActionCount));
 
 
@@ -56,32 +56,14 @@ namespace Coffee {
         return GetMousePosition().y;
     }
 
-    bool Input::GetButtonRaw(const ButtonCode button, const ControllerCode controller)
+    bool Input::GetButtonRaw(const ButtonCode button)
     {
-        if (controller == 0) return false;
-
-        auto controllerIt = m_buttonStates.find(controller);
-        if (controllerIt != m_buttonStates.end())
-        {
-            const auto& buttonMap = controllerIt->second;
-            auto buttonIt = buttonMap.find(button);
-            return (buttonIt != buttonMap.end()) ? buttonIt->second : false;
-        }
-        return false;
+        return m_buttonStates[button];
     }
 
-    float Input::GetAxisRaw(const AxisCode axis, const ControllerCode controller)
+    float Input::GetAxisRaw(const AxisCode axis)
     {
-        if (controller == 0) return 0.0f;
-
-        auto controllerIt = m_axisStates.find(controller);
-        if (controllerIt != m_axisStates.end())
-        {
-            const auto& axisMap = controllerIt->second;
-            auto axisIt = axisMap.find(axis);
-            return (axisIt != axisMap.end()) ? axisIt->second : 0.0f;
-        }
-        return 0.0f;
+        return m_axisStates[axis];
     }
 
     void Input::OnAddController(const ControllerAddEvent* cEvent)
@@ -99,13 +81,13 @@ namespace Coffee {
         erase_if(m_gamepads, pred);
     }
     void Input::OnButtonPressed(ButtonPressEvent& e) {
-        COFFEE_INFO("Gamepad {0} Button {1} Pressed", e.Controller, e.Button);
-        m_buttonStates[e.Controller][e.Button] = true;
+        m_buttonStates[e.Button] += 1;
+        COFFEE_INFO("Gamepad {0} Button {1} Pressed. Current value: {2}", e.Controller, e.Button, (int)m_buttonStates[e.Button]);
     }
 
     void Input::OnButtonReleased(ButtonReleaseEvent& e) {
-        COFFEE_INFO("Gamepad {0} Button {1} Released", e.Controller, e.Button);
-        m_buttonStates[e.Controller][e.Button] = false;
+        m_buttonStates[e.Button] -= 1;
+        COFFEE_INFO("Gamepad {0} Button {1} Released. Current value: {2}", e.Controller, e.Button, (int)m_buttonStates[e.Button]);
     }
 
     void Input::OnAxisMoved(AxisMoveEvent& e) {
@@ -123,7 +105,7 @@ namespace Coffee {
         }
 
        
-        m_axisStates[e.Controller][e.Axis] = normalizedValue;
+        m_axisStates[e.Axis] = normalizedValue;
     }
     void Input::OnKeyPressed(const KeyPressedEvent& kEvent) {
         COFFEE_INFO("Key {0} Pressed", kEvent.GetKeyCode());

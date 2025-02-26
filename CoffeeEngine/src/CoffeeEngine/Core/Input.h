@@ -105,18 +105,16 @@ namespace Coffee {
          * @brief Checks if a specific button is currently pressed on a given controller.
          *
          * @param button The button code to check.
-         * @param controller The controller code (default is 0, meaning invalid controller).
          * @return True if the button is pressed, false otherwise.
          */
-        static bool GetButtonRaw(ButtonCode button, ControllerCode controller);
+        static bool GetButtonRaw(ButtonCode button);
         /**
          * @brief Retrieves the current value of an axis on a given controller.
          *
          * @param axis The axis code to check.
-         * @param controller The controller code (default is 0, meaning invalid controller).
          * @return The axis value, usually between -1 and 1. Returns 0 if the controller is invalid.
          */
-        static float GetAxisRaw(AxisCode axis, ControllerCode controller);
+        static float GetAxisRaw(AxisCode axis);
 
 		static InputLayer CurrentInputContext;
 
@@ -175,11 +173,11 @@ namespace Coffee {
          */
 	    static void OnMouseMoved(const MouseMovedEvent& event);
 
-        static std::vector<Coffee::InputBinding> m_bindings;
+        static std::vector<InputBinding> m_bindings;
 
 	    static std::vector<Ref<Gamepad>> m_gamepads;
-	    static std::unordered_map<ControllerCode, std::unordered_map<ButtonCode, bool>> m_buttonStates;
-	    static std::unordered_map<ControllerCode, std::unordered_map<AxisCode, float>> m_axisStates;
+	    static std::unordered_map<ButtonCode, char> m_buttonStates;
+	    static std::unordered_map<AxisCode, float> m_axisStates;
 	    static std::unordered_map<KeyCode, bool> m_keyStates;
 
 	};

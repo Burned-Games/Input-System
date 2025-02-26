@@ -1,6 +1,9 @@
 #pragma once
 
-#include "CoffeeEngine/Core/Input.h"
+#include "CoffeeEngine/Core/ControllerCodes.h"
+#include "CoffeeEngine/Core/KeyCodes.h"
+
+#include <string>
 
 namespace Coffee
 {
