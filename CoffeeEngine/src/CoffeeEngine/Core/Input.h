@@ -120,9 +120,16 @@ namespace Coffee {
 
         static void OnEvent(Event& e);
 
-	    private:
-
-	    static void OnAddController(const ControllerAddEvent* cEvent);
+	private:
+        /**
+	     * @brief Handles controller connection events
+	     * @param cEvent The event data to process
+	     */
+        static void OnAddController(const ControllerAddEvent* cEvent);
+	    /**
+         * @brief Handles controller disconnection events
+         * @param cEvent The event data to process
+         */
 	    static void OnRemoveController(ControllerRemoveEvent* cEvent);
 	    /**
         * @brief Handles button press events from controllers.
