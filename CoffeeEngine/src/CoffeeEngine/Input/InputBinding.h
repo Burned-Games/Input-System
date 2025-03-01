@@ -25,7 +25,7 @@ namespace Coffee
          *
          * @param controller The input source.
          */
-        float GetValue(ControllerCode controller);
+        float GetValue(ControllerCode controller) const;
 
     };
 } // namespace Coffee

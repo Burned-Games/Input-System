@@ -2,10 +2,10 @@
 
 #include "CoffeeEngine/Core/Layer.h"
 #include "CoffeeEngine/Core/Stopwatch.h"
+#include "CoffeeEngine/Core/Input.h"
 #include "CoffeeEngine/Events/ControllerEvent.h"
 #include "CoffeeEngine/Events/KeyEvent.h"
 #include "CoffeeEngine/Renderer/Renderer.h"
-#include "Input.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_timer.h>

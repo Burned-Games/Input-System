@@ -72,7 +72,7 @@ namespace Coffee {
     }
 
 
-    void Input::OnRemoveController(ControllerRemoveEvent* cEvent)
+    void Input::OnRemoveController(const ControllerRemoveEvent* cEvent)
     {
         // Remove controller by SDL_Gamepad ID
         auto pred = [&cEvent](const Ref<Gamepad>& gamepad) {
@@ -80,17 +80,17 @@ namespace Coffee {
         };
         erase_if(m_gamepads, pred);
     }
-    void Input::OnButtonPressed(ButtonPressEvent& e) {
+    void Input::OnButtonPressed(const ButtonPressEvent& e) {
         m_buttonStates[e.Button] += 1;
-        COFFEE_INFO("Gamepad {0} Button {1} Pressed. Current value: {2}", e.Controller, e.Button, (int)m_buttonStates[e.Button]);
+        COFFEE_INFO("Gamepad {0} Button {1} Pressed. Current value: {2}", e.Controller, e.Button, static_cast<int>(m_buttonStates[e.Button]));
     }
 
-    void Input::OnButtonReleased(ButtonReleaseEvent& e) {
+    void Input::OnButtonReleased(const ButtonReleaseEvent& e) {
         m_buttonStates[e.Button] -= 1;
-        COFFEE_INFO("Gamepad {0} Button {1} Released. Current value: {2}", e.Controller, e.Button, (int)m_buttonStates[e.Button]);
+        COFFEE_INFO("Gamepad {0} Button {1} Released. Current value: {2}", e.Controller, e.Button, static_cast<int>(m_buttonStates[e.Button]));
     }
 
-    void Input::OnAxisMoved(AxisMoveEvent& e) {
+    void Input::OnAxisMoved(const AxisMoveEvent& e) {
 
         constexpr float DEADZONE = 0.15f;
         float normalizedValue = e.Value / 32767.0f;
@@ -136,71 +136,61 @@ namespace Coffee {
             	using enum EventType;
                 case ControllerConnected:
                 {
-                    ControllerAddEvent* cEvent = static_cast<ControllerAddEvent*>(&e);
-                    if (cEvent)
+                if (const auto* cEvent = static_cast<ControllerAddEvent*>(&e))
                         OnAddController(cEvent);
                     break;
                 }
                 case ControllerDisconnected:
                 {
-                    ControllerRemoveEvent* cEvent = static_cast<ControllerRemoveEvent*>(&e);
-                    if (cEvent)
+                    if (const auto* cEvent = static_cast<ControllerRemoveEvent*>(&e))
                         OnRemoveController(cEvent);
                     break;
                 }
                 case ButtonPressed:
                 {
-                    ButtonPressEvent* bEvent = static_cast<ButtonPressEvent*>(&e);
-                    if (bEvent)
+                    if (const auto* bEvent = static_cast<ButtonPressEvent*>(&e))
                         OnButtonPressed(*bEvent);
                     break;
                 }
                 case ButtonReleased:
                 {
-                    ButtonReleaseEvent* bEvent = static_cast<ButtonReleaseEvent*>(&e);
-                    if (bEvent)
+                    if (const auto* bEvent = static_cast<ButtonReleaseEvent*>(&e))
                         OnButtonReleased(*bEvent);
                     break;
                 }
                 case AxisMoved:
                 {
-                    AxisMoveEvent* aEvent = static_cast<AxisMoveEvent*>(&e);
-                    if (aEvent)
+                    if (const auto* aEvent = static_cast<AxisMoveEvent*>(&e))
                         OnAxisMoved(*aEvent);
                     break;
                 }
                 case KeyPressed:
                 {
-                    KeyPressedEvent* kEvent = static_cast<KeyPressedEvent*>(&e);
-                    if (kEvent)
+                    if (const auto* kEvent = static_cast<KeyPressedEvent*>(&e))
                         OnKeyPressed(*kEvent);
                     break;
                 }
                 case KeyReleased:
                 {
-                    KeyReleasedEvent* kEvent = static_cast<KeyReleasedEvent*>(&e);
-                    if (kEvent)
+                    if (const auto* kEvent = static_cast<KeyReleasedEvent*>(&e))
                         OnKeyReleased(*kEvent);
                     break;
                 }
                 case MouseButtonPressed:
                 {
-                    MouseButtonPressedEvent* mEvent = static_cast<MouseButtonPressedEvent*>(&e);
-                    if (mEvent)
+                    if (const auto* mEvent = static_cast<MouseButtonPressedEvent*>(&e))
                         OnMouseButtonPressed(*mEvent);
                     break;
                 }
                 case MouseButtonReleased:
                 {
-                    MouseButtonReleasedEvent* mEvent = static_cast<MouseButtonReleasedEvent*>(&e);
-                    if (mEvent)
+                    if (const auto* mEvent = static_cast<MouseButtonReleasedEvent*>(&e))
                         OnMouseButtonReleased(*mEvent);
                     break;
                 }
                 case MouseMoved:
                 {
-                    MouseMovedEvent* mEvent = static_cast<MouseMovedEvent*>(&e);
-                    if (mEvent)
+                    if (const auto* mEvent = static_cast<MouseMovedEvent*>(&e))
                         OnMouseMoved(*mEvent);
                     break;
                 }

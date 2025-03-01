@@ -130,25 +130,25 @@ namespace Coffee {
          * @brief Handles controller disconnection events
          * @param cEvent The event data to process
          */
-	    static void OnRemoveController(ControllerRemoveEvent* cEvent);
+	    static void OnRemoveController(const ControllerRemoveEvent* cEvent);
 	    /**
         * @brief Handles button press events from controllers.
         *
         * @param e The button press event to process.
         */
-        static void OnButtonPressed(ButtonPressEvent& e);
+        static void OnButtonPressed(const ButtonPressEvent& e);
 	    /**
          * @brief Handles button release events from controllers.
          *
          * @param e The button release event to process.
          */
-        static void OnButtonReleased(ButtonReleaseEvent& e);
+        static void OnButtonReleased(const ButtonReleaseEvent& e);
 	    /**
          * @brief Handles axis movement events from controllers.
          *
          * @param e The axis move event to process.
          */
-        static void OnAxisMoved(AxisMoveEvent& e);
+        static void OnAxisMoved(const AxisMoveEvent& e);
 	    /**
          * @brief Handles key press events from the keyboard.
          *
