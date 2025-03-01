@@ -18,6 +18,8 @@
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "CoffeeEngine/Scripting/Script.h"
+#include "CoffeeEngine/Scripting/ScriptManager.h"
 #include "src/CoffeeEngine/IO/Serialization/GLMSerialization.h"
 #include "CoffeeEngine/IO/ResourceLoader.h"
 
@@ -162,9 +164,6 @@ namespace Coffee {
 
         MeshComponent()
         {
-            // TEMPORAL! In the future use for example MeshComponent() : mesh(MeshFactory(PrimitiveType::MeshText))
-            Ref<Model> m = Model::Load("assets/models/MissingMesh.glb");
-            mesh = m->GetMeshes()[0];
         }
         MeshComponent(const MeshComponent&) = default;
         MeshComponent(Ref<Mesh> mesh)
@@ -452,6 +451,39 @@ namespace Coffee {
                     cereal::make_nvp("Radius", radius)
             );
         }
+    };
+    
+    // Move it to the Component.h
+    struct ScriptComponent
+    {
+        Ref<Script> script;
+
+        ScriptComponent() = default;
+        ScriptComponent(const std::filesystem::path& path, ScriptingLanguage language)
+        {
+            switch (language)
+            {
+                using enum ScriptingLanguage;
+            case Lua:
+                script = ScriptManager::CreateScript(path, language);
+                break;
+            case cSharp:
+                break;
+            }
+        }
+/* 
+        static void OnConstruct(entt::registry& registry, entt::entity entity)
+        {
+            auto& scriptComponent = registry.get<ScriptComponent<DerivedScript>>(entity);
+
+            if(Editor is in runtime)
+            {
+                ScriptManager::ExecuteScript(scriptComponent.script);
+                script.OnScenetreeEntered();
+            }
+        } */
+
+
     };
 }
 

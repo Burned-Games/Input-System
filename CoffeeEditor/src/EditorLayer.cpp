@@ -21,6 +21,8 @@
 #include "CoffeeEngine/Scene/Scene.h"
 #include "CoffeeEngine/Scene/SceneCamera.h"
 #include "CoffeeEngine/Scene/SceneTree.h"
+#include "CoffeeEngine/Scripting/Lua/LuaBackend.h"
+#include "CoffeeEngine/Scripting/ScriptManager.h"
 #include "Panels/SceneTreePanel.h"
 #include "entt/entity/entity.hpp"
 #include "imgui_internal.h"
@@ -49,6 +51,8 @@ namespace Coffee {
     void EditorLayer::OnAttach()
     {
         ZoneScoped;
+
+        ScriptManager::RegisterBackend(ScriptingLanguage::Lua, CreateRef<LuaBackend>());
 
         m_EditorScene = CreateRef<Scene>();
         m_ActiveScene = m_EditorScene;
@@ -191,6 +195,13 @@ namespace Coffee {
 
         ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 
+        struct MainMenuWindows
+        {
+            bool EditorSettings = false;
+            bool ProjectSettings = false;
+            bool AboutCoffeeEngine = false;
+        }static mainMenuWindows;
+
         std::string mainMenuAction = "";
         if (ImGui::BeginMainMenuBar()) {
 
@@ -208,6 +219,10 @@ namespace Coffee {
                 if (ImGui::MenuItem(ICON_LC_FILE_PLUS_2 " New Project...", "Ctrl+N")) { NewProject(); }
                 if (ImGui::MenuItem(ICON_LC_FOLDER_OPEN " Open Project...", "Ctrl+O")) { OpenProject(); }
                 if (ImGui::MenuItem(ICON_LC_SAVE " Save Project", "Ctrl+S")) { SaveProject(); }
+                if(ImGui::MenuItem(ICON_LC_SETTINGS " Project Settings", nullptr, mainMenuWindows.ProjectSettings)) 
+                { 
+                    mainMenuWindows.ProjectSettings = !mainMenuWindows.ProjectSettings;
+                }
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Editor"))
@@ -234,6 +249,10 @@ namespace Coffee {
                     if(ImGui::MenuItem("Content Browser", nullptr, m_ContentBrowserPanel.IsVisible())) { m_ContentBrowserPanel.ToggleVisibility(); }
                     if(ImGui::MenuItem("Output", nullptr, m_OutputPanel.IsVisible())) { m_OutputPanel.ToggleVisibility(); }
                     ImGui::EndMenu();
+                }
+                if(ImGui::MenuItem("Editor Settings"))
+                {
+                    mainMenuWindows.EditorSettings = true;
                 }
                 ImGui::EndMenu();
             }
@@ -273,8 +292,17 @@ namespace Coffee {
             ImGui::EndMainMenuBar();
         }
 
-        // About Coffee Engine Popup
+        if(mainMenuWindows.ProjectSettings)
+        {
+            ImGui::Begin("Project Settings");
+            ImGui::Text("Project Settings");
+            ImGui::Separator();
+            ImGui::End();
+        }
 
+        // Editor Settings Popup
+
+        // About Coffee Engine Popup
         if(mainMenuAction == "About Coffee Engine"){ ImGui::OpenPopup("About Coffee Engine"); }
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.5f, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowSize({400, 150});
@@ -290,8 +318,6 @@ namespace Coffee {
             }
             ImGui::EndPopup();
         }
-
-
 
         // Render the panels
         m_SceneTreePanel.OnImGuiRender();
@@ -556,13 +582,13 @@ namespace Coffee {
 
                 if(meshComponent.drawAABB)
                 {
-                    const AABB& aabb = meshComponent.mesh->GetAABB().CalculateTransformedAABB(transform);
+                    const AABB& aabb = meshComponent.mesh ? meshComponent.mesh->GetAABB().CalculateTransformedAABB(transform) : AABB();
                     DebugRenderer::DrawBox(aabb, {0.27f, 0.52f, 0.53f, 1.0f});
                 }
 
                 // ----------------------------------
 
-                OBB obb = meshComponent.mesh->GetOBB(transform);
+                OBB obb = meshComponent.mesh ? meshComponent.mesh->GetOBB(transform) : OBB();
                 DebugRenderer::DrawBox(obb, {0.99f, 0.50f, 0.09f, 1.0f});
 
 
@@ -686,6 +712,7 @@ namespace Coffee {
         {
             Project::New(path);
             Project::SaveActive();
+            Project::Load(path);
             Application::Get().GetWindow().SetTitle(Project::GetActive()->GetProjectName() + " - Coffee Engine");
         }
         else

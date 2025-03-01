@@ -6,36 +6,48 @@
 --[[export]] exampleString = "Hello, ImGui!"
 --[[export]] exampleBool = true
 
-function OnCreate()
-    print("OnCreate()")
-    log("OnCreate()")
-    log_error("OnCreate()")
-    log_warning("OnCreate()")
-    log_critical("OnCreate()")
-    return 1
+--[[export]] child_amplitude = 2
+
+--[[export]] parent = nil
+local camera
+
+
+--[[export]] childs = {}
+local all_entities = {}
+
+local time = 0
+
+function OnReady()
+    parent = self:get_parent()
+    parent_name = parent:get_component("TagComponent").tag
+    log("Parent name: " .. parent_name)
+
+    camera = current_scene:get_entity_by_name("Camera")
+    
+    all_entities = current_scene:get_all_entities()
+
+    childs = self:get_children()
 end
 
-function OnUpdate()
-    --log("OnUpdate()")
+function OnUpdate(delta)
 
-    local entityTag = entity:GetComponent(entity)
-    --print("Entity tag: " .. entityTag)
+    -- sinuodal movement of the camera
+    camera:get_component("TransformComponent").position = Vector3.new(0, 0, 5 + math.sin(time) * 2)
 
-    if input.is_key_pressed(input.keycode.Space) then
-        log("Space")
+    for i, entity in ipairs(childs) do
+        local transform = entity:get_component("TransformComponent")
+        transform.position = Vector3.new(math.sin(time + i) * child_amplitude, math.cos(time + i) * child_amplitude, 0)
+        transform.rotation = Vector3.new(time * 100, time * 100, 0)
     end
 
-    if input.is_mouse_button_pressed(input.mousecode.Left) then
-        log("Left")
-        local x, y = input.get_mouse_position()
-        log("Mouse position: (" .. x .. ", " .. y .. ")")
-    end
+    time = time + delta
 
-    log("BOOL: " .. tostring(exampleBool))
-    log("INT: " .. exampleInt)
-    log("FLOAT: " .. exampleFloat)
-    log("STRING: " .. exampleString)
-    return 1
+    parent_script = parent:get_component("ScriptComponent")
+
+    log(tostring(parent_script.lives))
+
+    parent_script.lives = parent_script.lives + 1
+
 end
 
 function on_destroy()

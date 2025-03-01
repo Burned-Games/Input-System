@@ -2,13 +2,24 @@
 
 #include "CoffeeEngine/Core/Layer.h"
 #include "CoffeeEngine/Core/Stopwatch.h"
+#include "CoffeeEngine/Core/Input.h"
+#include "CoffeeEngine/Events/ControllerEvent.h"
 #include "CoffeeEngine/Events/KeyEvent.h"
 #include "CoffeeEngine/Renderer/Renderer.h"
 #include "CoffeeEngine/Audio/Audio.h"
 
-#include <SDL3/SDL_timer.h>
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_timer.h>
 #include <tracy/Tracy.hpp>
+
+#ifdef WIN32
+#include <windows.h>
+extern "C"
+{
+    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif //def WIN32
 
 namespace Coffee
 {
@@ -24,6 +35,7 @@ namespace Coffee
         m_Window = Window::Create(WindowProps("Coffee Engine"));
         SetEventCallback(COFFEE_BIND_EVENT_FN(OnEvent));
 
+        Input::Init();
         Renderer::Init();
         Audio::Init();
 
@@ -64,6 +76,7 @@ namespace Coffee
         EventDispatcher dispacher(e);
         dispacher.Dispatch<WindowCloseEvent>(COFFEE_BIND_EVENT_FN(OnWindowClose));
 
+        Input::OnEvent(e);
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
         {
@@ -194,6 +207,36 @@ namespace Coffee
                 case SDL_EVENT_MOUSE_WHEEL:
                 {
                     MouseScrolledEvent e(event.wheel.x, event.wheel.y);
+                    m_EventCallback(e);
+                    break;
+                }
+                case SDL_EVENT_GAMEPAD_ADDED:
+                {
+                    ControllerAddEvent e((event.gdevice.which));
+                    m_EventCallback(e);
+                    break;
+                }
+                case SDL_EVENT_GAMEPAD_REMOVED:
+                {
+                    ControllerRemoveEvent e(event.gdevice.which);
+                    m_EventCallback(e);
+                    break;
+                }
+                case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+                {
+                    ButtonPressEvent e(event.gbutton.which, event.gbutton.button);
+                    m_EventCallback(e);
+                    break;
+                }
+                case SDL_EVENT_GAMEPAD_BUTTON_UP:
+                {
+                    ButtonReleaseEvent e(event.gbutton.which, event.gbutton.button);
+                    m_EventCallback(e);
+                    break;
+                }
+                case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+                {
+                    AxisMoveEvent e(event.gaxis.which, event.gaxis.axis, event.gaxis.value);
                     m_EventCallback(e);
                     break;
                 }

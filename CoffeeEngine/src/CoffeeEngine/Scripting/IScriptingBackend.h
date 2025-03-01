@@ -1,7 +1,8 @@
 #pragma once
+
+#include "CoffeeEngine/Core/Base.h"
+#include "CoffeeEngine/Scripting/Script.h"
 #include <filesystem>
-#include <functional>
-#include <string>
 
 namespace Coffee {
 
@@ -18,27 +19,11 @@ namespace Coffee {
              */
             virtual void Initialize() = 0;
 
-            /**
-             * @brief Executes a script.
-             *
-             * @param script The script to execute.
-             */
-            virtual void ExecuteScript(const std::string& script) = 0;
+            virtual Ref<Script> CreateScript(const std::filesystem::path& path) = 0;
 
-            virtual void ExecuteFile(const std::filesystem::path& filepath) = 0;
+            virtual void ExecuteScript(Script& script) = 0;
 
-            /**
-             * @brief Registers a function with the scripting backend.
-             *
-             * @param name The name of the function.
-             * @param func The function to register.
-             */
-            virtual void RegisterFunction(const std::string& script, std::function<int()> func, const std::string& name) = 0;
-
-            virtual void BindFunction(const std::string& script, const std::string& name, std::function<int()>& func) = 0;
-
-            virtual void RegisterVariable(const std::string& name, void* variable) = 0;
-
+            virtual void Shutdown() = 0;
     };
 
 } // namespace Coffee

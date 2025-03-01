@@ -1,61 +1,66 @@
 #pragma once
 
-#include "CoffeeEngine/Scripting/ScriptManager.h"
+#include <cereal/external/rapidjson/reader.h>
 #include <entt/entity/registry.hpp>
 
-#include <functional>
 #include <filesystem>
+#include <functional>
+#include <any>
+#include <unordered_map>
 
 namespace Coffee
 {
+    enum class ExportedVariableType
+    {
+        None,
+        Int,
+        Float,
+        String,
+        Bool,
+        Vector2,
+        Vector3,
+        Vector4,
+        Matrix3,
+        Matrix4,
+        Entity,
+        Scene,
+        Material,
+        Light
+    };
+
+    struct ExportedVariable
+    {
+        std::string name;
+        std::any value;
+        ExportedVariableType type;
+    };
+
     class Script
     {
     public:
-        Script(const std::filesystem::path& filepath, ScriptingLanguage language)
-            : m_Language(language), m_Path(filepath) {}
+        Script() {}
+        virtual void OnReady() = 0;
+        virtual void OnUpdate(float dt) = 0;
+        virtual void OnExit() = 0;
 
-        std::function<int()> OnCreate;
-        std::function<int()> OnUpdate;
-        std::function<int()> OnDestroy;
+        // The function parameter should be more generic
+        template <typename Ret, typename... Args>
+        void RegisterFunction(const std::string& name, std::function<Ret(Args...)> function);
+        // TODO: Add support for variadic arguments
+        virtual void CallFunction(const std::string& functionName) = 0;
 
-        const std::filesystem::path& GetPath() const { return m_Path; }
-        const ScriptingLanguage& GetLanguage() const { return m_Language; }
+        // The variable parameter should be more generic
+        //virtual void SetVariable(const std::string& name, std::any value) = 0;
+        template <typename T>
+        void SetVariable(const std::string& name, T value);
 
-    private:
-        ScriptingLanguage m_Language;
-        std::filesystem::path m_Path;
-    };
+        template <typename T>
+        T GetVariable(const std::string& name);
 
-    struct ScriptComponent
-    {
-        Script script;
+        virtual void ParseScript() = 0;
 
-        ScriptComponent() = default;
-        ScriptComponent(const std::filesystem::path& filepath, ScriptingLanguage language, entt::registry& registry)
-            : script(filepath, language)
-        {
-            registry.on_construct<ScriptComponent>().connect<&ScriptComponent::OnConstruct>();
-            registry.on_destroy<ScriptComponent>().connect<&ScriptComponent::OnDestroy>();
-        }
-        ScriptComponent(const Script& script)
-            : script(script) {}
-
-        static void OnConstruct(entt::registry& registry, entt::entity entity)
-        {
-            auto& scriptComponent = registry.get<ScriptComponent>(entity);
-            
-            ScriptManager::ExecuteScriptFromFile(scriptComponent.script);
-            ScriptManager::BindFunction(scriptComponent.script.GetPath().string(), "OnCreate", scriptComponent.script.OnCreate);
-            ScriptManager::BindFunction(scriptComponent.script.GetPath().string(), "OnUpdate", scriptComponent.script.OnUpdate);
-            ScriptManager::BindFunction(scriptComponent.script.GetPath().string(), "OnDestroy", scriptComponent.script.OnDestroy);
-
-            scriptComponent.script.OnCreate();
-        }
-
-        static void OnDestroy(entt::registry& registry, entt::entity entity)
-        {
-            auto& scriptComponent = registry.get<ScriptComponent>(entity);
-            scriptComponent.script.OnDestroy();
-        }
+        inline std::unordered_map<std::string, ExportedVariable>& GetExportedVariables() { return m_ExportedVariables; }
+    protected:
+        std::unordered_map<std::string, ExportedVariable> m_ExportedVariables;
     };
 }

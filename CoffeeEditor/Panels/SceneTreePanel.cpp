@@ -13,19 +13,21 @@
 #include "CoffeeEngine/Scene/Scene.h"
 #include "CoffeeEngine/Scene/SceneCamera.h"
 #include "CoffeeEngine/Scene/SceneTree.h"
-#include "CoffeeEngine/Scripting/Lua/LuaBackend.h"
+#include "CoffeeEngine/Scripting/Lua/LuaScript.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include "imgui_internal.h"
 #include <IconsLucide.h>
 
 #include <CoffeeEngine/Scripting/Script.h>
+#include <any>
 #include <array>
 #include <cstdint>
 #include <cstring>
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include <memory>
 #include <string>
 
 namespace Coffee {
@@ -350,7 +352,8 @@ namespace Coffee {
             {
                 ImGui::Text("Mesh");
                 ImGui::SameLine();
-                if(ImGui::Button(meshComponent.GetMesh()->GetName().c_str(), {64, 32}))
+                const std::string& meshName = meshComponent.GetMesh() ? meshComponent.GetMesh()->GetName() : "Missing Mesh!!";
+                if(ImGui::Button(meshName.c_str(), {64, 32}))
                 {
                     ImGui::OpenPopup("MeshPopup");
                 }
@@ -729,73 +732,100 @@ namespace Coffee {
             }
         }
 
+        
         if (entity.HasComponent<ScriptComponent>())
         {
             auto& scriptComponent = entity.GetComponent<ScriptComponent>();
             bool isCollapsingHeaderOpen = true;
             if (ImGui::CollapsingHeader("Script", &isCollapsingHeaderOpen, ImGuiTreeNodeFlags_DefaultOpen))
             {
-                /*
-                ImGui::Text("Script Name: ");
-                ImGui::Text(scriptComponent.script.GetLanguage() == ScriptingLanguage::Lua ? "Lua" : "CSharp");
+                
+                //ImGui::Text("Script Name: ");
+                //ImGui::Text(scriptComponent.script.GetLanguage() == ScriptingLanguage::Lua ? "Lua" : "CSharp");
 
-                ImGui::Text("Script Path: ");
-                ImGui::Text(scriptComponent.script.GetPath().string().c_str());
-                */
+                //ImGui::Text("Script Path: ");
+                //ImGui::Text(scriptComponent.script.GetPath().string().c_str());
+                
 
                 // Get the exposed variables
-                std::vector<LuaVariable> exposedVariables = LuaBackend::MapVariables(scriptComponent.script.GetPath().string());
+                auto& exposedVariables = scriptComponent.script->GetExportedVariables();
 
                 // print the exposed variables
-                for (auto& variable : exposedVariables)
+                for (auto& [name, variable] : exposedVariables)
                 {
-                    auto it = LuaBackend::scriptEnvironments.find(scriptComponent.script.GetPath().string());
-                    if (it == LuaBackend::scriptEnvironments.end()) {
-                        COFFEE_CORE_ERROR("Script environment for {0} not found", scriptComponent.script.GetPath().string());
-                        continue;
-                    }
-
-                    sol::environment& env = it->second;
-
                     switch (variable.type)
                     {
-                    case sol::type::boolean: {
-                        bool value = env[variable.name];
-                        if (ImGui::Checkbox(variable.name.c_str(), &value))
+                    case ExportedVariableType::Bool:
+                    {
+                        bool value = variable.value.has_value() ? std::any_cast<bool>(variable.value) : false;
+                        if (ImGui::Checkbox(name.c_str(), &value))
                         {
-                            env[variable.name] = value;
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
                         }
                         break;
                     }
-                    case sol::type::number: {
-                        float number = env[variable.name];
-                        if (ImGui::InputFloat(variable.name.c_str(), &number))
+                    case ExportedVariableType::Int:
+                    {
+                        int value = variable.value.has_value() ? std::any_cast<int>(variable.value) : 0;
+                        if (ImGui::InputInt(name.c_str(), &value))
                         {
-                            env[variable.name] = number;
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
                         }
                         break;
                     }
-                    case sol::type::string: {
-                        std::string str = env[variable.name];
+                    case ExportedVariableType::Float:
+                    {
+                        float value = variable.value.has_value() ? std::any_cast<float>(variable.value) : 0.0f;
+                        if (ImGui::InputFloat(name.c_str(), &value))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
+                    case ExportedVariableType::String:
+                    {
+                        std::string value = variable.value.has_value() ? std::any_cast<std::string>(variable.value) : "";
                         char buffer[256];
                         memset(buffer, 0, sizeof(buffer));
-                        strcpy(buffer, str.c_str());
-
-                        if (ImGui::InputText(variable.name.c_str(), buffer, sizeof(buffer)))
+                        strcpy(buffer, value.c_str());
+                        if (ImGui::InputText(name.c_str(), buffer, sizeof(buffer)))
                         {
-                            env[variable.name] = std::string(buffer);
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, std::string(buffer));
+                            variable.value = std::string(buffer);
                         }
                         break;
                     }
-                    case sol::type::none: {
-                        ImGui::SeparatorText(variable.value.c_str());
-                        break;
-                    }
-                    default:
+                    case ExportedVariableType::Entity:
+                    {
+                        Entity value = variable.value.has_value() ? std::any_cast<Entity>(variable.value) : Entity{};
+                        if (ImGui::Button(name.c_str()))
+                        {
+                            ImGui::OpenPopup("EntityPopup");
+                        }
+                        if (ImGui::BeginPopup("EntityPopup"))
+                        {
+                            auto view = m_Context->m_Registry.view<TagComponent>();
+                            for (auto entityID : view)
+                            {
+                                Entity e{ entityID, m_Context.get() };
+                                auto& tag = e.GetComponent<TagComponent>().Tag;
+                                if (ImGui::Selectable(tag.c_str()))
+                                {
+                                    value = e;
+                                    std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                                    variable.value = value;
+                                }
+                            }
+                            ImGui::EndPopup();
+                        }
                         break;
                     }
                 }
             }
+        }
         }
 
         ImGui::Separator();
@@ -915,7 +945,7 @@ namespace Coffee {
                 }
                 else if(items[item_current] == "Script Component")
                 {
-                    if(!entity.HasComponent<ScriptComponent>())
+                    //if(!entity.HasComponent<ScriptComponent>())
                         //entity.AddComponent<ScriptComponent>();
                         // TODO add script component
                     ImGui::CloseCurrentPopup();

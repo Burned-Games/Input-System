@@ -2,6 +2,7 @@
 
 #include "CoffeeEngine/Core/Base.h"
 #include "CoffeeEngine/Core/DataStructures/Octree.h"
+#include "CoffeeEngine/Core/Log.h"
 #include "CoffeeEngine/Math/Frustum.h"
 #include "CoffeeEngine/Renderer/DebugRenderer.h"
 #include "CoffeeEngine/Renderer/EditorCamera.h"
@@ -13,8 +14,7 @@
 #include "CoffeeEngine/Scene/PrimitiveMesh.h"
 #include "CoffeeEngine/Scene/SceneCamera.h"
 #include "CoffeeEngine/Scene/SceneTree.h"
-#include "CoffeeEngine/Scripting/Lua/LuaBackend.h"
-#include "CoffeeEngine/Scripting/ScriptManager.h"
+#include "CoffeeEngine/Scripting/Lua/LuaScript.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include "entt/entity/snapshot.hpp"
@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <glm/detail/type_quat.hpp>
 #include <glm/fwd.hpp>
+#include <memory>
 #include <string>
 #include <tracy/Tracy.hpp>
 
@@ -73,6 +74,34 @@ namespace Coffee {
         m_Registry.destroy((entt::entity)entity);
     }
 
+    Entity Scene::GetEntityByName(const std::string& name)
+    {
+        auto view = m_Registry.view<TagComponent>();
+
+        for(auto entity : view)
+        {
+            auto& tag = view.get<TagComponent>(entity).Tag;
+            if(tag == name)
+                return Entity{entity, this};
+        }
+
+        return Entity{entt::null, this};
+    }
+
+    std::vector<Entity> Scene::GetAllEntities()
+    {
+        std::vector<Entity> entities;
+
+        auto view = m_Registry.view<entt::entity>();
+
+        for(auto entity : view)
+        {
+            entities.push_back(Entity{entity, this});
+        }
+
+        return entities;
+    }
+
     void Scene::OnInitEditor()
     {
         ZoneScoped;
@@ -84,11 +113,18 @@ namespace Coffee {
         Entity camera = CreateEntity("Camera");
         camera.AddComponent<CameraComponent>();
 
-        // TEST ------------------------------
-        for(int i = 0; i < 25; i++)
-        {
-            m_Octree.Insert({{rand() % 20 - 10, rand() % 20 - 10, rand() % 20 - 10}});
-        } */
+        Ref<Shader> missingShader = CreateRef<Shader>("MissingShader", std::string(missingShaderSource));
+        missingMaterial = CreateRef<Material>("Missing Material", missingShader); //TODO: Port it to use the Material::Create
+
+        camera.AddComponent<ScriptComponent>("assets/scripts/CameraController.lua", ScriptingLanguage::Lua, m_Registry);
+
+        Entity scriptEntity = CreateEntity("Script");
+        //scriptEntity.AddComponent<ScriptComponent>("assets/scripts/test.lua", ScriptingLanguage::Lua, m_Registry); // TODO move the registry to the ScriptManager constructor
+        scriptEntity.AddComponent<MeshComponent>(PrimitiveMesh::CreateCube());
+        scriptEntity.AddComponent<MaterialComponent>();
+
+        //Entity scriptEntity2 = CreateEntity("Script2");
+        //scriptEntity2.AddComponent<ScriptComponent>("assets/scripts/test2.lua", ScriptingLanguage::Lua, m_Registry); // TODO move the registry to the ScriptManager constructor*/
     }
 
     void Scene::OnInitRuntime()
@@ -111,6 +147,20 @@ namespace Coffee {
 
         Audio::StopAllEvents();
         Audio::PlayInitialAudios();
+        // Get all entities with ScriptComponent
+        auto scriptView = m_Registry.view<ScriptComponent>();
+
+        for (auto& entity : scriptView)
+        {
+            Entity scriptEntity{entity, this};
+
+            auto& scriptComponent = scriptView.get<ScriptComponent>(entity);
+
+            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable("self", scriptEntity);
+            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable("current_scene", this);
+
+            scriptComponent.script->OnReady();
+        }
     }
 
     void Scene::OnUpdateEditor(EditorCamera& camera, float dt)
@@ -191,6 +241,14 @@ namespace Coffee {
         }
 
         UpdateAudioComponentsPositions();
+        // Get all entities with ScriptComponent
+        auto scriptView = m_Registry.view<ScriptComponent>();
+
+        for (auto& entity : scriptView)
+        {
+            auto& scriptComponent = scriptView.get<ScriptComponent>(entity);
+            scriptComponent.script->OnUpdate(dt);
+        }
 
         //TODO: Add this to a function bc it is repeated in OnUpdateEditor
         Renderer::BeginScene(*camera, cameraTransform);
@@ -198,10 +256,10 @@ namespace Coffee {
         m_Octree.DebugDraw();
 
         // Get all the static meshes from the Octree
-
+/* 
         glm::mat4 testProjection = glm::perspective(glm::radians(90.0f), 16.0f / 9.0f, 0.1f, 100.0f);
 
-        Frustum frustum = Frustum(camera->GetProjection() /* testProjection */ * glm::inverse(cameraTransform));
+        Frustum frustum = Frustum(camera->GetProjection() * glm::inverse(cameraTransform));
         DebugRenderer::DrawFrustum(frustum, glm::vec4(1.0f), 1.0f);
 
         auto meshes = m_Octree.Query(frustum);
@@ -209,9 +267,9 @@ namespace Coffee {
         for(auto& mesh : meshes)
         {
             Renderer::Submit(RenderCommand{mesh.transform, mesh.object, mesh.object->GetMaterial(), 0});
-        }
+        } */
         
-/*         // Get all entities with ModelComponent and TransformComponent
+        // Get all entities with ModelComponent and TransformComponent
         auto view = m_Registry.view<MeshComponent, TransformComponent>();
 
         // Loop through each entity with the specified components
@@ -226,7 +284,7 @@ namespace Coffee {
             Ref<Material> material = (materialComponent) ? materialComponent->material : nullptr;
             
             Renderer::Submit(RenderCommand{transformComponent.GetWorldTransform(), mesh, material, (uint32_t)entity});
-        } */
+        }
 
         //Get all entities with LightComponent and TransformComponent
         auto lightView = m_Registry.view<LightComponent, TransformComponent>();
@@ -241,19 +299,6 @@ namespace Coffee {
             lightComponent.Direction = glm::normalize(glm::vec3(-transformComponent.GetWorldTransform()[1]));
 
             Renderer::Submit(lightComponent);
-        }
-
-        // Get all entities with ScriptComponent
-        auto scriptView = m_Registry.view<ScriptComponent>();
-
-        for (auto& entity : scriptView)
-        {
-            Entity scriptEntity{entity, this};
-            ScriptManager::RegisterVariable("entity", (void*)&scriptEntity);
-
-            auto& scriptComponent = scriptView.get<ScriptComponent>(entity);
-
-            scriptComponent.script.OnUpdate();
         }
 
         Renderer::EndScene();
