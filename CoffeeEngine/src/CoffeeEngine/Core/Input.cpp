@@ -21,8 +21,6 @@ namespace Coffee {
     void Input::Init()
     {
         SDL_InitSubSystem(SDL_INIT_GAMEPAD);
-
-        COFFEE_CORE_INFO("Input initialized");
     }
 
 
@@ -82,12 +80,10 @@ namespace Coffee {
     }
     void Input::OnButtonPressed(const ButtonPressEvent& e) {
         m_buttonStates[e.Button] += 1;
-        COFFEE_INFO("Gamepad {0} Button {1} Pressed. Current value: {2}", e.Controller, e.Button, static_cast<int>(m_buttonStates[e.Button]));
     }
 
     void Input::OnButtonReleased(const ButtonReleaseEvent& e) {
         m_buttonStates[e.Button] -= 1;
-        COFFEE_INFO("Gamepad {0} Button {1} Released. Current value: {2}", e.Controller, e.Button, static_cast<int>(m_buttonStates[e.Button]));
     }
 
     void Input::OnAxisMoved(const AxisMoveEvent& e) {
@@ -99,32 +95,22 @@ namespace Coffee {
         {
             normalizedValue = 0.0f;
         }
-        else
-        {
-            COFFEE_INFO("Gamepad {0} Axis {1} value {2}", e.Controller, e.Axis, normalizedValue);
-        }
-
        
         m_axisStates[e.Axis] = normalizedValue;
     }
     void Input::OnKeyPressed(const KeyPressedEvent& kEvent) {
-        COFFEE_INFO("Key {0} Pressed", kEvent.GetKeyCode());
     }
 
     void Input::OnKeyReleased(const KeyReleasedEvent& kEvent) {
-        COFFEE_INFO("Key {0} Released", kEvent.GetKeyCode());
     }
 
     void Input::OnMouseButtonPressed(const MouseButtonPressedEvent& mEvent) {
-        COFFEE_INFO("Mouse Button {0} Pressed", mEvent.GetMouseButton());
     }
 
     void Input::OnMouseButtonReleased(const MouseButtonReleasedEvent& mEvent) {
-        COFFEE_INFO("Mouse Button {0} Released", mEvent.GetMouseButton());
     }
 
     void Input::OnMouseMoved(const MouseMovedEvent& mEvent) {
-        COFFEE_INFO("Mouse Moved: {0}, {1}", mEvent.GetX(), mEvent.GetY());
     }
 
     void Input::OnEvent(Event& e)
