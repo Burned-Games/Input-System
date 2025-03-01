@@ -8,6 +8,15 @@
 #include <SDL3/SDL.h>
 #include <tracy/Tracy.hpp>
 
+#ifdef WIN32
+#include <windows.h>
+extern "C"
+{
+    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
+}
+#endif //def WIN32
+
 namespace Coffee
 {
     Application* Application::s_Instance = nullptr;
