@@ -6,6 +6,7 @@
 #include "CoffeeEngine/Events/ControllerEvent.h"
 #include "CoffeeEngine/Events/KeyEvent.h"
 #include "CoffeeEngine/Renderer/Renderer.h"
+#include "CoffeeEngine/Audio/Audio.h"
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_timer.h>
@@ -34,8 +35,9 @@ namespace Coffee
         m_Window = Window::Create(WindowProps("Coffee Engine"));
         SetEventCallback(COFFEE_BIND_EVENT_FN(OnEvent));
 
-        Renderer::Init();
         Input::Init();
+        Renderer::Init();
+        Audio::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
@@ -43,6 +45,7 @@ namespace Coffee
 
     Application::~Application()
     {
+        Audio::Shutdown();
     }
 
     void Application::PushLayer(Layer* layer)
@@ -101,6 +104,9 @@ namespace Coffee
 
             //Poll and handle events
             ProcessEvents();
+
+            //Process audio
+            Audio::ProcessAudio();
 
             //Update and render
             {
