@@ -122,9 +122,9 @@ namespace Coffee {
 
 	private:
         /**
-	     * @brief Handles controller connection events
-	     * @param cEvent The event data to process
-	     */
+         * @brief Handles controller connection events
+         * @param cEvent The event data to process
+         */
         static void OnAddController(const ControllerAddEvent* cEvent);
 	    /**
          * @brief Handles controller disconnection events

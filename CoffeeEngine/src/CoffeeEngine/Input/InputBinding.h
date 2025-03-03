@@ -27,5 +27,17 @@ namespace Coffee
          */
         float GetValue(ControllerCode controller);
 
+        /**
+         * @brief Get the action's current value as the specified type
+         * @tparam T The type to return
+         * @return The current value that corresponds to the type
+         */
+        template <typename T>
+        T Get();
+
+
+
     };
+
+
 } // namespace Coffee

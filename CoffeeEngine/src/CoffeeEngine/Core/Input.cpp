@@ -82,12 +82,12 @@ namespace Coffee {
     }
     void Input::OnButtonPressed(ButtonPressEvent& e) {
         m_buttonStates[e.Button] += 1;
-        COFFEE_INFO("Gamepad {0} Button {1} Pressed. Current value: {2}", e.Controller, e.Button, (int)m_buttonStates[e.Button]);
+        COFFEE_INFO("Gamepad {0} Button {1} Pressed. Current value: {2}", e.Controller, e.Button, GetButtonRaw(e.Button));
     }
 
     void Input::OnButtonReleased(ButtonReleaseEvent& e) {
         m_buttonStates[e.Button] -= 1;
-        COFFEE_INFO("Gamepad {0} Button {1} Released. Current value: {2}", e.Controller, e.Button, (int)m_buttonStates[e.Button]);
+        COFFEE_INFO("Gamepad {0} Button {1} Released. Current value: {2}", e.Controller, e.Button, GetButtonRaw(e.Button));
     }
 
     void Input::OnAxisMoved(AxisMoveEvent& e) {
