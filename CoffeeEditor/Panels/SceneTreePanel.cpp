@@ -13,19 +13,21 @@
 #include "CoffeeEngine/Scene/Scene.h"
 #include "CoffeeEngine/Scene/SceneCamera.h"
 #include "CoffeeEngine/Scene/SceneTree.h"
-#include "CoffeeEngine/Scripting/Lua/LuaBackend.h"
+#include "CoffeeEngine/Scripting/Lua/LuaScript.h"
 #include "entt/entity/entity.hpp"
 #include "entt/entity/fwd.hpp"
 #include "imgui_internal.h"
 #include <IconsLucide.h>
 
 #include <CoffeeEngine/Scripting/Script.h>
+#include <any>
 #include <array>
 #include <cstdint>
 #include <cstring>
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include <memory>
 #include <string>
 
 namespace Coffee {
@@ -350,7 +352,8 @@ namespace Coffee {
             {
                 ImGui::Text("Mesh");
                 ImGui::SameLine();
-                if(ImGui::Button(meshComponent.GetMesh()->GetName().c_str(), {64, 32}))
+                const std::string& meshName = meshComponent.GetMesh() ? meshComponent.GetMesh()->GetName() : "Missing Mesh!!";
+                if(ImGui::Button(meshName.c_str(), {64, 32}))
                 {
                     ImGui::OpenPopup("MeshPopup");
                 }
@@ -561,70 +564,288 @@ namespace Coffee {
             }
         }
 
+        if (entity.HasComponent<AudioSourceComponent>())
+        {
+            auto& audioSourceComponent = entity.GetComponent<AudioSourceComponent>();
+            bool isCollapsingHeaderOpen = true;
+            if (ImGui::CollapsingHeader("Audio Source", &isCollapsingHeaderOpen, ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                if (!Audio::audioBanks.empty() && ImGui::BeginCombo("Audio Bank", audioSourceComponent.audioBankName.c_str()))
+                {
+                    for (auto& bank : Audio::audioBanks)
+                    {
+                        const bool isSelected = (audioSourceComponent.audioBankName == bank->name);
+
+                        if (bank->name != "Init" && ImGui::Selectable(bank->name.c_str()))
+                        {
+                            if (audioSourceComponent.audioBank != bank)
+                            {
+                                audioSourceComponent.audioBank = bank;
+                                audioSourceComponent.audioBankName = bank->name;
+
+                                if (!audioSourceComponent.eventName.empty())
+                                {
+                                    audioSourceComponent.eventName.clear();
+                                    Audio::StopEvent(audioSourceComponent);
+                                }
+                            }
+                        }
+
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                if (audioSourceComponent.audioBank && ImGui::BeginCombo("Audio Clip", audioSourceComponent.eventName.c_str()))
+                {
+                    for (const auto& event : audioSourceComponent.audioBank->events)
+                    {
+                        const bool isSelected = audioSourceComponent.eventName == event;
+
+                        if (ImGui::Selectable(event.c_str()))
+                        {
+                            if (!audioSourceComponent.eventName.empty())
+                                Audio::StopEvent(audioSourceComponent);
+
+                            audioSourceComponent.eventName = event;
+                        }
+
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+
+                ImGui::Checkbox("Play On Awake", &audioSourceComponent.playOnAwake);
+
+                if (ImGui::Checkbox("Mute", &audioSourceComponent.mute))
+                    Audio::SetVolume(audioSourceComponent.gameObjectID, audioSourceComponent.mute ? 0.f : audioSourceComponent.volume);
+
+                if (ImGui::SliderFloat("Volume", &audioSourceComponent.volume, 0.f, 1.f))
+                {
+                    if (audioSourceComponent.mute)
+                        audioSourceComponent.mute = false;
+
+                    Audio::SetVolume(audioSourceComponent.gameObjectID, audioSourceComponent.volume);
+                }
+
+                if (audioSourceComponent.audioBank && !audioSourceComponent.eventName.empty())
+                {
+                    if (!audioSourceComponent.isPlaying)
+                    {
+                        if (ImGui::SmallButton("Play"))
+                        {
+                            Audio::PlayEvent(audioSourceComponent);
+                        }
+                    }
+                    else
+                    {
+                        if (!audioSourceComponent.isPaused)
+                        {
+                            if (ImGui::SmallButton("Pause"))
+                            {
+                                Audio::PauseEvent(audioSourceComponent);
+                            }
+                        }
+                        else if (ImGui::SmallButton("Resume"))
+                        {
+                            Audio::ResumeEvent(audioSourceComponent);
+                        }
+
+                        ImGui::SameLine();
+
+                        if (ImGui::SmallButton("Stop"))
+                        {
+                            Audio::StopEvent(audioSourceComponent);
+                        }
+                    }
+                }
+            }
+
+            if(!isCollapsingHeaderOpen)
+            {
+                AudioZone::UnregisterObject(audioSourceComponent.gameObjectID);
+                Audio::UnregisterAudioSourceComponent(audioSourceComponent);
+                entity.RemoveComponent<AudioSourceComponent>();
+            }
+        }
+
+        if (entity.HasComponent<AudioListenerComponent>())
+        {
+            auto& audioListenerComponent = entity.GetComponent<AudioListenerComponent>();
+            bool isCollapsingHeaderOpen = true;
+            if (ImGui::CollapsingHeader("Audio Listener", &isCollapsingHeaderOpen, ImGuiTreeNodeFlags_DefaultOpen))
+            {
+
+            }
+
+            if(!isCollapsingHeaderOpen)
+            {
+                Audio::UnregisterAudioListenerComponent(audioListenerComponent);
+                entity.RemoveComponent<AudioListenerComponent>();
+            }
+        }
+
+        if (entity.HasComponent<AudioZoneComponent>())
+        {
+            auto& audioZoneComponent = entity.GetComponent<AudioZoneComponent>();
+            bool isCollapsingHeaderOpen = true;
+            if (ImGui::CollapsingHeader("Audio Zone", &isCollapsingHeaderOpen, ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                if (ImGui::BeginCombo("Bus Channels", audioZoneComponent.audioBusName.c_str()))
+                {
+                    for (auto& busName : AudioZone::busNames)
+                    {
+                        const bool isSelected = (audioZoneComponent.audioBusName == busName);
+
+                        if (ImGui::Selectable(busName.c_str()))
+                        {
+                            if (audioZoneComponent.audioBusName != busName)
+                            {
+                                audioZoneComponent.audioBusName = busName;
+                                AudioZone::UpdateReverbZone(audioZoneComponent);
+                            }
+                        }
+
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+
+                    ImGui::EndCombo();
+                }
+
+                ImGui::Text("Position");
+                if (ImGui::DragFloat3("##ZonePosition", glm::value_ptr(audioZoneComponent.position), 0.1f)==true)
+                    AudioZone::UpdateReverbZone(audioZoneComponent);
+
+                ImGui::Text("Radius");
+                if (ImGui::SliderFloat("##ZoneRadius", &audioZoneComponent.radius, 1.f, 100.f))
+                    AudioZone::UpdateReverbZone(audioZoneComponent);
+            }
+
+            if(!isCollapsingHeaderOpen)
+            {
+                AudioZone::RemoveReverbZone(audioZoneComponent);
+                entity.RemoveComponent<AudioZoneComponent>();
+            }
+        }
+
+        
         if (entity.HasComponent<ScriptComponent>())
         {
             auto& scriptComponent = entity.GetComponent<ScriptComponent>();
             bool isCollapsingHeaderOpen = true;
             if (ImGui::CollapsingHeader("Script", &isCollapsingHeaderOpen, ImGuiTreeNodeFlags_DefaultOpen))
             {
-                /*
-                ImGui::Text("Script Name: ");
-                ImGui::Text(scriptComponent.script.GetLanguage() == ScriptingLanguage::Lua ? "Lua" : "CSharp");
-
-                ImGui::Text("Script Path: ");
-                ImGui::Text(scriptComponent.script.GetPath().string().c_str());
-                */
+                //ImGui::Text("Script Path: ");
+                //ImGui::Text(scriptComponent.script->GetPath().c_str());
 
                 // Get the exposed variables
-                std::vector<LuaVariable> exposedVariables = LuaBackend::MapVariables(scriptComponent.script.GetPath().string());
+                auto& exposedVariables = scriptComponent.script->GetExportedVariables();
 
                 // print the exposed variables
-                for (auto& variable : exposedVariables)
+                for (auto& [name, variable] : exposedVariables)
                 {
-                    auto it = LuaBackend::scriptEnvironments.find(scriptComponent.script.GetPath().string());
-                    if (it == LuaBackend::scriptEnvironments.end()) {
-                        COFFEE_CORE_ERROR("Script environment for {0} not found", scriptComponent.script.GetPath().string());
-                        continue;
-                    }
-
-                    sol::environment& env = it->second;
-
                     switch (variable.type)
                     {
-                    case sol::type::boolean: {
-                        bool value = env[variable.name];
-                        if (ImGui::Checkbox(variable.name.c_str(), &value))
+                    case ExportedVariableType::Bool: {
+                        bool value = variable.value.has_value() ? std::any_cast<bool>(variable.value) : false;
+                        if (ImGui::Checkbox(name.c_str(), &value))
                         {
-                            env[variable.name] = value;
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
                         }
                         break;
                     }
-                    case sol::type::number: {
-                        float number = env[variable.name];
-                        if (ImGui::InputFloat(variable.name.c_str(), &number))
+                    case ExportedVariableType::Int: {
+                        int value = variable.value.has_value() ? std::any_cast<int>(variable.value) : 0;
+                        if (ImGui::InputInt(name.c_str(), &value))
                         {
-                            env[variable.name] = number;
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
                         }
                         break;
                     }
-                    case sol::type::string: {
-                        std::string str = env[variable.name];
+                    case ExportedVariableType::Float: {
+                        float value = variable.value.has_value() ? std::any_cast<float>(variable.value) : 0.0f;
+                        if (ImGui::InputFloat(name.c_str(), &value))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
+                    case ExportedVariableType::String: {
+                        std::string value =
+                            variable.value.has_value() ? std::any_cast<std::string>(variable.value) : "";
                         char buffer[256];
                         memset(buffer, 0, sizeof(buffer));
-                        strcpy(buffer, str.c_str());
-
-                        if (ImGui::InputText(variable.name.c_str(), buffer, sizeof(buffer)))
+                        strcpy(buffer, value.c_str());
+                        if (ImGui::InputText(name.c_str(), buffer, sizeof(buffer)))
                         {
-                            env[variable.name] = std::string(buffer);
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)
+                                ->SetVariable(name, std::string(buffer));
+                            variable.value = std::string(buffer);
                         }
                         break;
                     }
-                    case sol::type::none: {
-                        ImGui::SeparatorText(variable.value.c_str());
+                    case ExportedVariableType::Entity: {
+                        Entity value = variable.value.has_value() ? std::any_cast<Entity>(variable.value) : Entity{};
+                        if (ImGui::Button(name.c_str()))
+                        {
+                            ImGui::OpenPopup("EntityPopup");
+                        }
+                        if (ImGui::BeginPopup("EntityPopup"))
+                        {
+                            auto view = m_Context->m_Registry.view<TagComponent>();
+                            for (auto entityID : view)
+                            {
+                                Entity e{entityID, m_Context.get()};
+                                auto& tag = e.GetComponent<TagComponent>().Tag;
+                                if (ImGui::Selectable(tag.c_str()))
+                                {
+                                    value = e;
+                                    std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)
+                                        ->SetVariable(name, value);
+                                    variable.value = value;
+                                }
+                            }
+                            ImGui::EndPopup();
+                        }
                         break;
                     }
-                    default:
+                    case ExportedVariableType::Vector2: {
+                        glm::vec2 value =
+                            variable.value.has_value() ? std::any_cast<glm::vec2>(variable.value) : glm::vec2{};
+                        if (ImGui::DragFloat2(name.c_str(), glm::value_ptr(value)))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
                         break;
+                    }
+                    case ExportedVariableType::Vector3: {
+                        glm::vec3 value =
+                            variable.value.has_value() ? std::any_cast<glm::vec3>(variable.value) : glm::vec3{};
+                        if (ImGui::DragFloat3(name.c_str(), glm::value_ptr(value)))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
+                    case ExportedVariableType::Vector4: {
+                        glm::vec4 value =
+                            variable.value.has_value() ? std::any_cast<glm::vec4>(variable.value) : glm::vec4{};
+                        if (ImGui::DragFloat4(name.c_str(), glm::value_ptr(value)))
+                        {
+                            std::dynamic_pointer_cast<LuaScript>(scriptComponent.script)->SetVariable(name, value);
+                            variable.value = value;
+                        }
+                        break;
+                    }
                     }
                 }
             }
@@ -650,7 +871,7 @@ namespace Coffee {
             static char buffer[256] = "";
             ImGui::InputTextWithHint("##Search Component", "Search Component:",buffer, 256);
 
-            std::string items[] = { "Tag Component", "Transform Component", "Mesh Component", "Material Component", "Light Component", "Camera Component", "Lua Script Component" };
+            std::string items[] = { "Tag Component", "Transform Component", "Mesh Component", "Material Component", "Light Component", "Camera Component", "Audio Source Component", "Audio Listener Component", "Audio Zone Component", "Lua Script Component" };
             static int item_current = 1;
 
             if (ImGui::BeginListBox("##listbox 2", ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - 200)))
@@ -667,6 +888,7 @@ namespace Coffee {
                 }
                 ImGui::EndListBox();
             }
+
 
             ImGui::Text("Description");
             ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel odio lectus. Integer scelerisque lacus a elit consequat, at imperdiet felis feugiat. Nunc rhoncus nisi lacinia elit ornare, eu semper risus consectetur.");
@@ -714,12 +936,77 @@ namespace Coffee {
                         entity.AddComponent<CameraComponent>();
                     ImGui::CloseCurrentPopup();
                 }
-                else if(items[item_current] == "Script Component")
+                else if(items[item_current] == "Audio Source Component")
+                {
+                    if(!entity.HasComponent<AudioSourceComponent>())
+                    {
+                        entity.AddComponent<AudioSourceComponent>();
+                        Audio::RegisterAudioSourceComponent(entity.GetComponent<AudioSourceComponent>());
+                        AudioZone::RegisterObject(entity.GetComponent<AudioSourceComponent>().gameObjectID, entity.GetComponent<AudioSourceComponent>().transform[3]);
+                    }
+
+                    ImGui::CloseCurrentPopup();
+                }
+                else if(items[item_current] == "Audio Listener Component")
+                {
+                    if(!entity.HasComponent<AudioListenerComponent>())
+                    {
+                        entity.AddComponent<AudioListenerComponent>();
+                        Audio::RegisterAudioListenerComponent(entity.GetComponent<AudioListenerComponent>());
+                    }
+
+                    ImGui::CloseCurrentPopup();
+                }
+                else if(items[item_current] == "Audio Zone Component")
+                {
+                    if(!entity.HasComponent<AudioZoneComponent>())
+                    {
+                        entity.AddComponent<AudioZoneComponent>();
+                        AudioZone::CreateZone(entity.GetComponent<AudioZoneComponent>());
+                    }
+
+                    ImGui::CloseCurrentPopup();
+                }
+                else if(items[item_current] == "Lua Script Component")
                 {
                     if(!entity.HasComponent<ScriptComponent>())
-                        //entity.AddComponent<ScriptComponent>();
-                        // TODO add script component
-                    ImGui::CloseCurrentPopup();
+                    {
+                        // Pop up a file dialog to select the save location for the new script
+                        FileDialogArgs args;
+                        args.Filters = {{"Lua Script", "lua"}};
+                        args.DefaultName = "NewScript.lua";
+                        const std::filesystem::path& path = FileDialog::SaveFile(args);
+
+                        if (!path.empty())
+                        {
+                            std::ofstream scriptFile(path);
+                            if (scriptFile.is_open())
+                            {
+                                scriptFile << "function on_ready()\n";
+                                scriptFile << "    -- Add initialization code here\n";
+                                scriptFile << "end\n\n";
+                                scriptFile << "function on_update(dt)\n";
+                                scriptFile << "    -- Add update code here\n";
+                                scriptFile << "end\n\n";
+                                scriptFile << "function on_exit()\n";
+                                scriptFile << "    -- Add cleanup code here\n";
+                                scriptFile << "end\n";
+                                scriptFile.close();
+
+                                // Add the script component to the entity
+                                entity.AddComponent<ScriptComponent>(path.string(), ScriptingLanguage::Lua);
+                            }
+                            else
+                            {
+                                COFFEE_CORE_ERROR("Failed to create Lua script file at: {0}", path.string());
+                            }
+                        }
+                        else
+                        {
+                            COFFEE_CORE_WARN("Create Lua Script: No file selected");
+                        }
+                        ImGui::CloseCurrentPopup();
+                    }
                 }
                 else
                 {
@@ -760,8 +1047,8 @@ namespace Coffee {
 
             ImGui::Text("Description");
             ImGui::TextWrapped("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel odio lectus. Integer "
-                               "scelerisque lacus a elit consequat, at imperdiet felis feugiat. Nunc rhoncus nisi "
-                               "lacinia elit ornare, eu semper risus consectetur.");
+                            "scelerisque lacus a elit consequat, at imperdiet felis feugiat. Nunc rhoncus nisi "
+                            "lacinia elit ornare, eu semper risus consectetur.");
 
             if (ImGui::Button("Cancel"))
             {
@@ -807,5 +1094,4 @@ namespace Coffee {
             ImGui::EndPopup();
         }
     }
-
 }

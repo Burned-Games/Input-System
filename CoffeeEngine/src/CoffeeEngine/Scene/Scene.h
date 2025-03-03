@@ -9,6 +9,7 @@
 #include <entt/entt.hpp>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 namespace Coffee {
 
@@ -52,6 +53,16 @@ namespace Coffee {
          */
         void DestroyEntity(Entity entity);
 
+        Entity GetEntityByName(const std::string& name);
+
+        std::vector<Entity> GetAllEntities();
+
+        template<typename... Components>
+        auto GetAllEntitiesWithComponents()
+        {
+            return m_Registry.view<Components...>();
+        }
+
         /**
          * @brief Initialize the scene.
          */
@@ -83,12 +94,6 @@ namespace Coffee {
         void OnExitEditor();
         void OnExitRuntime();
 
-        template<typename... Components>
-        auto GetAllEntitiesWithComponents()
-        {
-            return m_Registry.view<Components...>();
-        }
-
         /**
          * @brief Load a scene from a file.
          * @param path The path to the file.
@@ -102,6 +107,11 @@ namespace Coffee {
          * @param scene The scene to save.
          */
         static void Save(const std::filesystem::path& path, Ref<Scene> scene);
+
+        /**
+         * @brief Update the positions of the audio components.
+         */
+        void UpdateAudioComponentsPositions();
 
         const std::filesystem::path& GetFilePath() { return m_FilePath; }
     private:
