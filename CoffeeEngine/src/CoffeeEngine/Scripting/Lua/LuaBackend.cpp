@@ -2,6 +2,7 @@
 
 #include "CoffeeEngine/Core/Input.h"
 #include "CoffeeEngine/Core/KeyCodes.h"
+#include "CoffeeEngine/Core/ControllerCodes.h"
 #include "CoffeeEngine/Core/Log.h"
 #include "CoffeeEngine/Core/MouseCodes.h"
 #include <fstream>
@@ -378,6 +379,8 @@ namespace Coffee {
         sol::table inputTable = luaState.create_table();
         BindKeyCodesToLua(luaState, inputTable);
         BindMouseCodesToLua(luaState, inputTable);
+        BindControllerCodesToLua(luaState, inputTable);
+        BindAxisCodesToLua(luaState, inputTable);
 
         inputTable.set_function("is_key_pressed", [](KeyCode key) {
             return Input::IsKeyPressed(key);
@@ -399,9 +402,6 @@ namespace Coffee {
             glm::vec2 mousePosition = Input::GetMousePosition();
             return std::make_tuple(mousePosition.x, mousePosition.y);
         });
-
-
-
 
         luaState["Input"] = inputTable;
         # pragma endregion
