@@ -11,7 +11,6 @@
 #include "CoffeeEngine/Renderer/Mesh.h"
 #include "CoffeeEngine/Renderer/Model.h"
 #include "CoffeeEngine/Scene/SceneCamera.h"
-#include "CoffeeEngine/Audio/Audio.h"
 #include <cereal/cereal.hpp>
 #include <cereal/access.hpp>
 #include <cereal/types/string.hpp>
@@ -30,6 +29,8 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+// FIXME : DONT MOVE THIS INCLUDE
+#include "CoffeeEngine/Audio/Audio.h"
 
 namespace Coffee {
     /**
