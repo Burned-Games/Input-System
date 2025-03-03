@@ -312,7 +312,7 @@ namespace Coffee {
             {"RIGHT_STICK", Button::RightStick},
             {"LEFT_SHOULDER", Button::LeftShoulder},
             {"RIGHT_SHOULDER", Button::RightShoulder},
-            {"DPAD_up", Button::DpadUp},
+            {"DPAD_UP", Button::DpadUp},
             {"DPAD_DOWN", Button::DpadDown},
             {"DPAD_LEFT", Button::DpadLeft},
             {"DPAD_RIGHT", Button::DpadRight},
